@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllEntity, getNotification, readNotification, selectEntity, setEntity } from "../redux/slice/entitySlice";
 import Logout from "./Logout";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
@@ -10,6 +10,7 @@ const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
 const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const pendingReadIdsRef = useRef(new Set());
   const debounceTimerRef = useRef(null);
@@ -178,8 +179,6 @@ const Header = () => {
 
 
 
-
-
   return (
     <>
       <header>
@@ -232,13 +231,7 @@ const Header = () => {
                               type="button"
                               className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
                                 }`}
-                              // onClick={() =>
-                              // {  
-                              //   setSelectedEntity(entity||"")
-                              //   dispatch(selectEntity({entity_id:entity?.id}))
-                              // }
-                              // }
-
+                           
                               onClick={() => {
                                 handleSelectEntity(entity)
                                 // dispatch(selectEntity({entity_id:entity?.id}))
@@ -267,21 +260,38 @@ const Header = () => {
                   </button>
 
                   <div className="dropdown-menu dropdown-menu-end">
-                    <div className="noti-dropdown">
+                    <div className="noti-dropdown" >
                       <h2 style={{ color: background }}>Notifications</h2>
                       <div className="noti-scroll">
                         <div className="noti-list">
                           {notification?.map((item) => (
-                            <div className="noti-in" key={item?.id} data-id={item?.id}
-                              data-is-read={item?.is_read} style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}>
+                              <div  className="noti-in">
+                           <Link
+                              to="/drawing-spool"
+                        
+                              key={item?.id}
+                              data-id={item?.id}
+                              state={{
+                                stage_id: item?.stage_id,
+                                spool_id: item?.spool_id,
+                              }}
+                              data-is-read={item?.is_read}
+                              style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
+                            >
                               <h3>
-                                {item?.get_spool?.spool_number} {item?.is_read === 0 && (<span></span>)} <b>{timeAgo(item.created_at)}</b>
+                                {item?.get_spool?.spool_number}
+                                {item?.is_read === 0 && <span></span>}
+                                <b>{timeAgo(item.created_at)}</b>
                               </h3>
+
                               <p>{item?.get_project?.project_name}</p>
+
                               <p>
                                 <b>Admin reply:</b> {item?.message}
                               </p>
-                            </div>
+                              </Link>
+                                 </div>
+
                           ))}
                         </div>
                       </div>

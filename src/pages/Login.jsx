@@ -144,7 +144,7 @@ const Login = () => {
 
                                     {/* password */}
                                     <div className="input-field">
-                                        <label>password</label>
+                                        <label>Password</label>
                                         <input
                                             type="password"
                                             name="password"

@@ -43,6 +43,10 @@ const STATUS_CONFIG = {
 const DrawingSpool = () => {
     const buffer = useRef("");
     const navigate = useNavigate()
+    const location=useLocation();
+    const {stage_id,spool_id}=location?.state||{};
+
+
     const startTime = useRef(0);
     const scannerInputRef = useRef(null);
     const { state } = useLocation();
@@ -50,8 +54,8 @@ const DrawingSpool = () => {
     const { spoolDrawingDetails } = useSelector((state) => state.spools)
     const background = useSelector((state) => state.entity.primaryColor);
     const [showReportIssue, setShowReportIssue] = useState(false)
-    const [spoolId, setSpoolId] = useState(null)
-    const [stageId, setStageId] = useState(null);
+    const [spoolId, setSpoolId] = useState(null||spool_id)
+    const [stageId, setStageId] = useState(null||stage_id);
     const [spoolDetails, setSpoolDetails] = useState(null);
     const [type, setType] = useState(null)
 
@@ -77,7 +81,7 @@ const DrawingSpool = () => {
                             action_type: 'start'
                         }))
                     } else {
-                        toast.error('you need to go in the ready to start start!')
+                        toast.error('You need to go in the ready to start start!')
                     }
                 }
                 else {
@@ -90,7 +94,7 @@ const DrawingSpool = () => {
                             action_type: 'complete'
                         }))
                     } else {
-                        toast.error('your task is not in progress!')
+                        toast.error('Your task is not in progress!')
                     }
                 }
                 await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
@@ -105,7 +109,7 @@ const DrawingSpool = () => {
                             action_type: 'pause'
                         }))
                     } else {
-                        toast.error('your task is not in progress!')
+                        toast.error('Your task is not in progress!')
                     }
                 } else {
                     if (currentStatus === 'paused') {
@@ -117,7 +121,7 @@ const DrawingSpool = () => {
                             action_type: 'resume'
                         }))
                     } else {
-                        toast.error('your task is already in progress!')
+                        toast.error('Your task is already in progress!')
                     }
                 }
                 const taskData = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
@@ -197,6 +201,11 @@ const DrawingSpool = () => {
 
     const handleReportIssueSubmit = async (reason) => {
         console.log("reson", reason)
+        if(!reason || reason.trim().length===0){
+            toast.error("Please enter the issue description")
+            return 
+        }
+        
         const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
         const project_id = spoolDetails?.project?.id
         if (currentStatus === 'in_progress' || currentStatus === 'paused' && currentStatus !== 'ready_to_start') {
@@ -213,7 +222,7 @@ const DrawingSpool = () => {
             const modalInstance = window.bootstrap?.Modal.getInstance(modalEl);
             modalInstance?.hide();
         } else {
-            toast.error('you need to start a task first!')
+            toast.error('You need to start a task first!')
         }
     }
 
@@ -335,8 +344,8 @@ const DrawingSpool = () => {
                                                     Resume
                                                 </div>
                                             </button>
-                                            <a href="#" className="next-stage-cta">Next Stage <img
-                                                src="/images/projects/arrow-left.svg" alt="" /></a>
+                                            {/* <a href="#" className="next-stage-cta">Next Stage <img
+                                                src="/images/projects/arrow-left.svg" alt="" /></a> */}
                                         </div>
                                     </div>
                                     {/* <!-- MOBILE-TAB --> */}
