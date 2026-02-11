@@ -755,7 +755,7 @@ button.logout-cta {
   input.srch-field {
     width: 320px;
     height: 48px;
-    padding: 10px;
+    padding: 10px 40px 10px 10px;
     border-radius: 12px;
     background-color: var(--white);
     border: 1px solid #00000066;
@@ -1063,9 +1063,11 @@ a.back-cta {
 
 .spools-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 20px;
+    flex-wrap: wrap;
 
   h1 {
     display: flex;

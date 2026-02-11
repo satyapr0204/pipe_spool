@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 
- export const getAllEntity = createAsyncThunk(
+export const getAllEntity = createAsyncThunk(
   "user/getAllEntity",
   async (formData, { rejectWithValue }) => {
     try {
@@ -18,7 +18,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const selectEntity = createAsyncThunk(
+export const selectEntity = createAsyncThunk(
   "user/selectEntity",
   async (formData, { rejectWithValue }) => {
     try {
@@ -31,7 +31,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const getNotification = createAsyncThunk(
+export const getNotification = createAsyncThunk(
   "user/getNotification",
   async (formData, { rejectWithValue }) => {
     try {
@@ -44,7 +44,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const readNotification = createAsyncThunk(
+export const readNotification = createAsyncThunk(
   "user/readNotification",
   async (formData, { rejectWithValue }) => {
     try {
@@ -57,14 +57,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
-        
+
 const entitySlice = createSlice({
   name: "entity",
   initialState: {
     list: [],
     selected: null,
     project: [],
-    notifications:[],
+    notifications: [],
     theme: null,
     primaryColor: null,
     selectedLogo: null,
@@ -120,7 +120,7 @@ const entitySlice = createSlice({
         state.primaryColor = secondary;
         state.selectedLogo = projects?.[0]?.entity?.logo;
         state.theme = primary && secondary
-          ? `linear-gradient(135deg, ${primary}, ${secondary})`
+          ? `linear-gradient(135deg, ${secondary}, #fff)`
           : "";
 
         if (projects?.[0]?.entity) {
@@ -135,40 +135,40 @@ const entitySlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error.message;
         // toast.error(action?.payload?.message)
-      
+
       })
 
-      builder.addCase(getNotification.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getNotification.fulfilled, (state, action) => {   
-        console.log("action",action?.payload?.data?.notifications)                       
+    builder.addCase(getNotification.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+      .addCase(getNotification.fulfilled, (state, action) => {
+        console.log("action", action?.payload?.data?.notifications)
         state.notifications = action?.payload?.data || [];
         state.loading = false;
       })
-      .addCase(getNotification.rejected, (state, action) => {     
+      .addCase(getNotification.rejected, (state, action) => {
         state.loading = false; // ✅ FIX
         state.error = action.payload || action.error.message;
         toast.error(action?.payload?.message || "Failed to fetch notifications");
       })
 
-      // .addCase(readNotification.pending, (state) => {
-      //   state.loading = true;
-      //   state.error = null;
-      // })
-      // .addCase(readNotification.fulfilled, (state, action) => {                          
-      //   // state.notifications = action?.payload?.data || [];
-      //   state.loading = false;
-      // })
-      // .addCase(readNotification.rejected, (state, action) => {     
-      //   state.loading = false; // ✅ FIX
-      //   state.error = action.payload || action.error.message;
-      //   toast.error(action?.payload?.message || "Failed to fetch notifications");
-      // })
+    // .addCase(readNotification.pending, (state) => {
+    //   state.loading = true;
+    //   state.error = null;
+    // })
+    // .addCase(readNotification.fulfilled, (state, action) => {                          
+    //   // state.notifications = action?.payload?.data || [];
+    //   state.loading = false;
+    // })
+    // .addCase(readNotification.rejected, (state, action) => {     
+    //   state.loading = false; // ✅ FIX
+    //   state.error = action.payload || action.error.message;
+    //   toast.error(action?.payload?.message || "Failed to fetch notifications");
+    // })
 
-    }
+  }
 });
 
-export const { setEntity,resetEntityState } = entitySlice.actions;
+export const { setEntity, resetEntityState } = entitySlice.actions;
 export default entitySlice.reducer;

@@ -1,13 +1,34 @@
-import React, { useEffect, useState } from 'react'
-import { stages } from "../assets/data.json";
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSpools } from '../redux/slice/spoolSlice';
 
+const STATUS_CONFIG = {
+    ready_to_start: {
+        className: "start",
+        icon: "hgi-play",
+        label: "Ready to Start",
+    },
+    paused: {
+        className: "paused",
+        icon: "hgi-pause",
+        label: "Paused",
+    },
+    in_progress: {
+        className: "inprogress",
+        icon: "hgi-refresh",
+        label: "In Progress",
+    },
+    completed: {
+        className: "completed",
+        icon: "hgi-checkmark-circle-01",
+        label: "Completed",
+    },
+};
+
 const ViewStageModal = ({ initialId }) => {
     const dispatch = useDispatch();
+    const modalRef = useRef(null);
     const { spoolData } = useSelector((state) => state.spools)
-    console.log("initialId", initialId)
-    console.log("spoolData", spoolData)
     const [allStages, setAllStages] = useState([]);
     const [spools, setSpools] = useState(null)
     console.log(allStages)
@@ -25,9 +46,26 @@ const ViewStageModal = ({ initialId }) => {
         }
     }, [spoolData])
 
+    useEffect(() => {
+        const modalEl = modalRef.current;
+        if (!modalEl) return;
+
+        const handleShown = () => {
+            const modalBody = modalEl.querySelector(".modal-body");
+            if (modalBody) modalBody.scrollTop = 0;
+        };
+
+        // Listen to Bootstrap event on this modal
+        modalEl.addEventListener("shown.bs.modal", handleShown);
+
+        return () => {
+            modalEl.removeEventListener("shown.bs.modal", handleShown);
+        };
+    }, []);
+
     return (
         <>
-            <div className="modal fade other-popup" id="view-stages-popup" tabindex="-1" aria-hidden="true">
+            <div className="modal fade other-popup" id="view-stages-popup" ref={modalRef} tabIndex="-1" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -53,15 +91,15 @@ const ViewStageModal = ({ initialId }) => {
                                                     <tr key={item?.id || index}>
                                                         <td>{index + 1}</td>
                                                         <td>{item?.stage_name}</td>
-                                                        <td>{item?.status || "Done"}</td>
+                                                        <td>{item?.status === "completed" ? "Done" : item?.status}</td>
 
                                                         <td>
-                                                            {item?.current_status === "done" ? (
-                                                                <div className="status-tag completed">
-                                                                    <i className="hgi hgi-stroke hgi-checkmark-circle-01"></i>
-                                                                    {item?.current_status}
-                                                                </div>
-                                                            ) :
+                                                            {item?.current_status !== "-" ? (
+                                                                <div className={`status-tag ${STATUS_CONFIG[item?.current_status]?.className}`}>
+                                                                    <i className={`hgi hgi-stroke ${STATUS_CONFIG[item?.current_status]?.icon}`}></i>
+                                                                    {STATUS_CONFIG[item?.current_status]?.label}
+                                                                </div>)
+                                                                :
                                                                 (<>-</>)
                                                             }
                                                         </td>
@@ -79,5 +117,4 @@ const ViewStageModal = ({ initialId }) => {
         </>
     )
 }
-
 export default ViewStageModal

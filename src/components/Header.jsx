@@ -16,6 +16,7 @@ const Header = () => {
   const debounceTimerRef = useRef(null);
 
   const hideHeader = ["/spool", "/drawing-spool"].includes(location.pathname);
+  const hideLogout = ["/drawing-spool"].includes(location.pathname)
   const user = JSON.parse(localStorage.getItem('user'))
 
   const userData = useSelector((state) => state.authuser)
@@ -146,9 +147,10 @@ const Header = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-
           const id = entry.target.dataset.id;
+          // console.log("id", entry)
           const isRead = entry.target.dataset.isRead === "1";
+          console.log("isRead", isRead)
           if (isRead) return;
           if (!pendingReadIdsRef.current.has(id)) {
             pendingReadIdsRef.current.add(id);
@@ -231,7 +233,7 @@ const Header = () => {
                               type="button"
                               className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
                                 }`}
-                           
+
                               onClick={() => {
                                 handleSelectEntity(entity)
                                 // dispatch(selectEntity({entity_id:entity?.id}))
@@ -258,50 +260,83 @@ const Header = () => {
                       {notifications?.notification_count}
                     </span>
                   </button>
-
                   <div className="dropdown-menu dropdown-menu-end">
                     <div className="noti-dropdown" >
                       <h2 style={{ color: background }}>Notifications</h2>
                       <div className="noti-scroll">
                         <div className="noti-list">
-                          {notification?.map((item) => (
-                              <div  className="noti-in">
-                           <Link
-                              to="/drawing-spool"
-                        
-                              key={item?.id}
-                              data-id={item?.id}
-                              state={{
-                                stage_id: item?.stage_id,
-                                spool_id: item?.spool_id,
-                              }}
-                              data-is-read={item?.is_read}
-                              style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
-                            >
-                              <h3>
-                                {item?.get_spool?.spool_number}
-                                {item?.is_read === 0 && <span></span>}
-                                <b>{timeAgo(item.created_at)}</b>
-                              </h3>
+                          {/* {notification?.map((item) => (
+                            <div className="noti-in" data-is-read={item?.is_read}
+                              data-id={item?.id}>
+                              <Link
+                                to="/drawing-spool"
 
-                              <p>{item?.get_project?.project_name}</p>
+                                key={item?.id}
+                                // data-id={item?.id}
+                                state={{
+                                  stage_id: item?.stage_id,
+                                  spool_id: item?.spool_id,
+                                }}
 
-                              <p>
-                                <b>Admin reply:</b> {item?.message}
-                              </p>
+                                style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
+                              >
+                                <h3>
+                                  {item?.get_spool?.spool_number}
+                                  {item?.is_read === 0 && <span></span>}
+                                  <b>{timeAgo(item.created_at)}</b>
+                                </h3>
+
+                                <p>{item?.get_project?.project_name}</p>
+
+                                <p>
+                                  <b>Admin reply:</b> {item?.message}
+                                </p>
                               </Link>
-                                 </div>
+                            </div>
 
-                          ))}
+                          ))} */}
+                          {notification?.length > 0 ? (
+                            <div className="noti-list" >
+                              {notification.map((item) => (
+                                <div className="noti-in" data-is-read={item?.is_read}
+                                  data-id={item?.id} key={item?.id}>
+                                  <Link
+                                    to="/drawing-spool"
+                                    data-id={item?.id}
+                                    state={{
+                                      stage_id: item?.stage_id,
+                                      spool_id: item?.spool_id,
+                                    }}
+                                    data-is-read={item?.is_read}
+                                    style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
+                                  >
+                                    <h3>
+                                      {item?.get_spool?.spool_number}
+                                      {item?.is_read === 0 && <span></span>}
+                                      <b>{timeAgo(item.created_at)}</b>
+                                    </h3>
+
+                                    <p>{item?.get_project?.project_name}</p>
+
+                                    <p>
+                                      <b>Admin reply:</b> {item?.message}
+                                    </p>
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="noti-list text-center">
+                              No notifications found.
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-
                 {/* LOGOUT */}
-                <button
+                {!hideLogout && <button
                   onClick={() => setShowLogoutModal(true)}
                   className="logout-cta"
                   style={{ background: background }}
@@ -310,7 +345,7 @@ const Header = () => {
                   data-bs-target="#logout-popup"
                 >
                   Logout <i className="hgi hgi-stroke hgi-logout-circle-02"></i>
-                </button>
+                </button>}
               </div>
             </div>
           </div>

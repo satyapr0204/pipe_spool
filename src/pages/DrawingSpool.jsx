@@ -3,11 +3,9 @@ import Header from '../components/Header'
 import IssueInfoPopup from '../components/IssueInfoPopup'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import StartPopup from '../components/StartPopup'
-import CompletePopup from '../components/CompletePopup'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSpoolsDrawing } from '../redux/slice/spoolSlice'
 import { pauseAndResumeTask, startAndComplateTask } from '../redux/slice/taskSlice'
-import ReportedIssuePopup from '../components/ReportedIssuePopup'
 import { toast } from 'react-toastify'
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
@@ -41,12 +39,9 @@ const STATUS_CONFIG = {
 };
 
 const DrawingSpool = () => {
-    const buffer = useRef("");
     const navigate = useNavigate()
-    const location=useLocation();
-    const {stage_id,spool_id}=location?.state||{};
-
-
+    const location = useLocation();
+    const { stage_id, spool_id } = location?.state || {};
     const startTime = useRef(0);
     const scannerInputRef = useRef(null);
     const { state } = useLocation();
@@ -54,14 +49,28 @@ const DrawingSpool = () => {
     const { spoolDrawingDetails } = useSelector((state) => state.spools)
     const background = useSelector((state) => state.entity.primaryColor);
     const [showReportIssue, setShowReportIssue] = useState(false)
-    const [spoolId, setSpoolId] = useState(null||spool_id)
-    const [stageId, setStageId] = useState(null||stage_id);
+    const [spoolId, setSpoolId] = useState(null || spool_id)
+    const [stageId, setStageId] = useState(null || stage_id);
     const [spoolDetails, setSpoolDetails] = useState(null);
     const [type, setType] = useState(null)
+    const [isTablet, setIsTablet] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            setIsTablet(width >= 800 && width <= 1334);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     const onScan = async (eventCall) => {
         try {
-            console.log("eventCall", eventCall)
+            console.log("eventCall ", eventCall)
             const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
             const project_id = spoolDetails?.project?.id
             const spool_id = spoolId
@@ -134,6 +143,16 @@ const DrawingSpool = () => {
         }
     }
 
+    useEffect(() => {
+        const inputEl = scannerInputRef.current;
+        if (!inputEl) return;
+        const handleWindowFocus = () => inputEl.focus();
+        window.addEventListener("focus", handleWindowFocus);
+        return () => {
+            window.removeEventListener("focus", handleWindowFocus);
+        };
+    }, []);
+
     console.log(spoolDetails?.flag_status, "flag_status")
 
     useEffect(() => {
@@ -161,13 +180,40 @@ const DrawingSpool = () => {
     const currentStatus =
         spoolDetails?.stage_barcode?.stage_status;
 
+    // useEffect(() => {
+    //     const inputEl = scannerInputRef.current;
+    //     if (!inputEl) return;
+
+    //     const handleKeyDown = async (e) => {
+    //         if (e.key !== "Enter") return;
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         const scannedCodeData = e.target.value.trim();
+    //         if (!scannedCodeData) return;
+    //         const action = getActionFromBarcode(scannedCodeData);
+    //         await onScan(action);
+    //         e.target.value = "";
+    //     };
+    //     inputEl.addEventListener("keydown", handleKeyDown);
+    //     const handleModalHidden = () => {
+    //         inputEl.focus();
+    //     };
+
+    //     document.addEventListener("hidden.bs.modal", handleModalHidden);
+    //     inputEl.focus();
+
+    //     return () => {
+    //         inputEl.removeEventListener("keydown", handleKeyDown);
+    //         document.removeEventListener("hidden.bs.modal", handleModalHidden);
+    //     };
+    // }, [onScan]);
+
     useEffect(() => {
         const inputEl = scannerInputRef.current;
         if (!inputEl) return;
 
         const handleKeyDown = async (e) => {
             if (e.key !== "Enter") return;
-
             e.preventDefault();
             e.stopPropagation();
 
@@ -175,37 +221,158 @@ const DrawingSpool = () => {
             if (!scannedCodeData) return;
 
             const action = getActionFromBarcode(scannedCodeData);
-
             await onScan(action);
 
             e.target.value = "";
         };
 
-        inputEl.addEventListener("keydown", handleKeyDown);
+        // const handleBlur = () => {
+        //     setTimeout(() => {
+        //         inputEl.focus();
+        //     }, 0);
+        // };
+        const handleBlur = () => {
+            setTimeout(() => {
+                const modalOpen = document.querySelector(".modal.show");
+                if (modalOpen) return; // popup is open, don’t focus scanner
+                inputEl.focus();
+            }, 0);
+        };
 
-        // IMPORTANT: refocus after modal closes
+        inputEl.addEventListener("keydown", handleKeyDown);
+        inputEl.addEventListener("blur", handleBlur);
         const handleModalHidden = () => {
             inputEl.focus();
         };
-
         document.addEventListener("hidden.bs.modal", handleModalHidden);
 
-        // initial focus
+        // Initial focus
         inputEl.focus();
 
         return () => {
             inputEl.removeEventListener("keydown", handleKeyDown);
+            inputEl.removeEventListener("blur", handleBlur);
             document.removeEventListener("hidden.bs.modal", handleModalHidden);
         };
     }, [onScan]);
 
+    // useEffect(() => {
+    //     const handleUnload = () => {
+    //         sendPauseBeacon();
+    //     };
+
+    //     window.addEventListener("pagehide", handleUnload);
+    //     window.addEventListener("beforeunload", handleUnload);
+
+    //     return () => {
+    //         window.removeEventListener("pagehide", handleUnload);
+    //         window.removeEventListener("beforeunload", handleUnload);
+    //     };
+    // }, []);
+
+    // const handlePauseTask = async () => {
+    //     if (currentStatus !== "in_progress") return;
+    //     const entity_id = JSON.parse(localStorage.getItem("selectedEntity"))?.id;
+    //     const project_id = spoolDetails?.project?.id;
+
+    //     try {
+    //         await dispatch(
+    //             pauseAndResumeTask({
+    //                 entity_id,
+    //                 project_id,
+    //                 spool_id: spoolId,
+    //                 stage_id: stageId,
+    //                 action_type: "pause",
+    //             })
+    //         );
+    //         await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+    //     } catch (err) {
+    //         console.log("Auto pause failed", err);
+    //     }
+    // };
+
+    // const sendPauseBeacon = async () => {
+    //     if (currentStatus !== "in_progress") return;
+    //     const entity_id = JSON.parse(localStorage.getItem("selectedEntity"))?.id;
+    //     const project_id = spoolDetails?.project?.id;
+
+    //     const payload = {
+    //         entity_id,
+    //         project_id,
+    //         spool_id: spoolId,
+    //         stage_id: stageId,
+    //         action_type: "pause",
+    //     };
+    //     console.log("Hello", currentStatus)
+    //     // await dispatch(
+    //     //     pauseAndResumeTask({
+    //     //         entity_id,
+    //     //         project_id,
+    //     //         spool_id: spoolId,
+    //     //         stage_id: stageId,
+    //     //         action_type: "pause",
+    //     //     })
+    //     // );
+    //     // await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+
+    //     const blob = new Blob([JSON.stringify(payload)], {
+    //         type: "application/json",
+    //     });
+
+    //     navigator.sendBeacon("https://pipespool.tgastaging.com/api/pause_or_resume_task", blob);
+    // };
+
+
+    // useEffect(() => {
+    //     const handleVisibilityChange = () => {
+    //         if (document.visibilityState === "hidden") {
+    //             handlePauseTask(); // works
+    //         }
+    //     };
+
+    //     const handleUnload = () => {
+    //         sendPauseBeacon(); // works for close/refresh/back
+    //     };
+
+    //     document.addEventListener("visibilitychange", handleVisibilityChange);
+    //     window.addEventListener("beforeunload", handleUnload);
+    //     window.addEventListener("pagehide", handleUnload);
+
+    //     return () => {
+    //         document.removeEventListener("visibilitychange", handleVisibilityChange);
+    //         window.removeEventListener("beforeunload", handleUnload);
+    //         window.removeEventListener("pagehide", handleUnload);
+    //     };
+    // }, [currentStatus, spoolId, stageId, spoolDetails]);
+
+
+    // const handlePauseTask = async () => {
+    //     if (currentStatus !== "in_progress") return;
+
+    //     try {
+    //         await dispatch(pauseAndResumeTask({
+    //             entity_id,
+    //             project_id,
+    //             spool_id: spoolId,
+    //             stage_id: stageId,
+    //             action_type: "pause",
+    //         }));
+    //         await dispatch(fetchSpoolsDrawing({
+    //             spool_id: spoolId,
+    //             stage_id: stageId,
+    //         }));
+    //     } catch (err) {
+    //         console.log("Auto pause failed", err);
+    //     }
+    // };
+
+
     const handleReportIssueSubmit = async (reason) => {
         console.log("reson", reason)
-        if(!reason || reason.trim().length===0){
+        if (!reason || reason.trim().length === 0) {
             toast.error("Please enter the issue description")
-            return 
+            return
         }
-        
         const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
         const project_id = spoolDetails?.project?.id
         if (currentStatus === 'in_progress' || currentStatus === 'paused' && currentStatus !== 'ready_to_start') {
@@ -265,19 +432,46 @@ const DrawingSpool = () => {
                                 <div className="col-lg-6 col-md-3">
                                     <div className="spool-strip-stat-report">
                                         <p>Status:</p>
-                                        {/* <div className="status-tag start">
-                                            <i className="hgi hgi-stroke hgi-play"></i> Ready to Start
-                                        </div> */}
                                         {STATUS_CONFIG[currentStatus] && (
-                                            <div className={`status-tag ${STATUS_CONFIG[currentStatus].className}`}>
-                                                <i className={`hgi hgi-stroke ${STATUS_CONFIG[currentStatus].icon}`}></i>
-                                                {STATUS_CONFIG[currentStatus].label}
+                                            !isTablet && <div className={`status-tag ${STATUS_CONFIG[currentStatus]?.className}`}>
+                                                <i className={`hgi hgi-stroke ${STATUS_CONFIG[currentStatus]?.icon}`}></i>
+                                                {STATUS_CONFIG[currentStatus]?.label}
                                             </div>
                                         )}
-                                        <button className="status-tag" type="button" data-bs-toggle="modal"
-                                            data-bs-target="#issue-info-popup" onClick={() => setShowReportIssue(true)}>
-                                            <i className="hgi hgi-stroke hgi-alert-01"></i> Report Issue
+                                        <button
+                                            type="button"
+                                            data-bs-toggle={currentStatus === "in_progress" ? undefined : "modal"}
+                                            data-bs-target={currentStatus === "in_progress" ? undefined : "#issue-info-popup"}
+                                            onClick={() => {
+                                                if (currentStatus !== "in_progress") {
+                                                    setShowReportIssue(true);
+                                                }
+                                            }}
+                                            disabled={currentStatus === "in_progress"}
+                                            className="status-tag"
+                                            style={
+                                                currentStatus === "in_progress"
+                                                    ? {
+                                                        backgroundColor: "#ffffff",
+                                                        color: "#999999",
+                                                        border: "1px solid #e0e0e0",
+                                                        cursor: "not-allowed",
+                                                        opacity: 0.7,
+                                                    }
+                                                    : {}
+                                            }
+                                        >
+                                            <i
+                                                className="hgi hgi-stroke hgi-alert-01"
+                                                style={
+                                                    currentStatus === "in_progress"
+                                                        ? { color: "#999999" }
+                                                        : {}
+                                                }
+                                            ></i>
+                                            {" "}Report Issue
                                         </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -290,22 +484,17 @@ const DrawingSpool = () => {
                                     {/* <!-- DESKTOP --> */}
                                     <div className="bar-code-wrp">
                                         <input
-                                            id="scannerInput"
+                                            // id="scannerInput"
                                             ref={scannerInputRef}
                                             autoFocus
                                             style={{ position: "absolute", left: "-1000px", top: "-1000px" }}
                                         />
                                         <div className="bar-code-in">
                                             <p>Scan to Start & Complete</p>
-                                            {/* <img src="/images/barcode.svg" alt="" /> */}
-
-                                            {/* <img src={`${imagebaseUrl + spoolDetails?.stage_barcode?.start_barcode}`} alt="" /> */}
                                             <img src={`${currentStatus === 'ready_to_start' ? imagebaseUrl + spoolDetails?.stage_barcode?.start_barcode : imagebaseUrl + spoolDetails?.stage_barcode?.end_barcode}`} alt="" />
                                         </div>
                                         <div className="bar-code-in" >
                                             <p>Scan to Pause & Resume</p>
-                                            {/* <img src="/images/barcode.svg" alt="" /> */}
-                                            {/* <img src={`${imagebaseUrl + spoolDetails?.spool_drawing?.pause_barcode}`} alt="" /> */}
                                             <img src={`${currentStatus === 'paused' ? imagebaseUrl + spoolDetails?.spool_drawing?.resume_barcode : imagebaseUrl + spoolDetails?.spool_drawing?.pause_barcode}`} alt="" />
                                         </div>
                                     </div>
@@ -313,39 +502,46 @@ const DrawingSpool = () => {
                                     {/* <!-- MOBILE-TAB --> */}
                                     <div className="drow-status-cta-wrp">
                                         <div className="drow-status-in">
-                                            <p>Status: <b>Ready to Start</b></p>
+                                            <p>Status:<b> {STATUS_CONFIG[currentStatus]?.label}</b></p>
                                         </div>
                                         <div className="drow-cta-grp">
-                                            <button type="button" className="btn-1" data-bs-target="#stage-start-popup"
-                                                data-bs-toggle="modal" onClick={() => setType('START')}>
-                                                <div className="start active">
-                                                    <i className="hgi hgi-stroke hgi-play"></i>
-                                                    Ready to Start
-                                                </div>
-                                            </button>
-                                            <button type="button" className="btn-1" data-bs-target="#stage-start-popup"
-                                                data-bs-toggle="modal" onClick={() => setType('END')}>
-                                                <div className="complete active">
-                                                    <i className="hgi hgi-stroke hgi-checkmark-circle-01"></i>
-                                                    Mark as Complete
-                                                </div>
-                                            </button>
-                                            <button type="button" className="btn-2" onClick={() => setType('PAUSE')} data-bs-target="#stage-start-popup"
-                                                data-bs-toggle="modal">
-                                                <div className="pause active">
-                                                    <i className="hgi hgi-stroke hgi-pause"></i>
-                                                    Pause
-                                                </div>
-                                            </button>
-                                            <button type="button" className="btn-2" onClick={() => setType('RESUME')} data-bs-target="#stage-start-popup"
-                                                data-bs-toggle="modal">
-                                                <div className="resume active">
-                                                    <i className="hgi hgi-stroke hgi-play"></i>onScan
-                                                    Resume
-                                                </div>
-                                            </button>
-                                            {/* <a href="#" className="next-stage-cta">Next Stage <img
-                                                src="/images/projects/arrow-left.svg" alt="" /></a> */}
+                                            {
+                                                currentStatus === 'ready_to_start' ? (
+                                                    <button type="button" className="btn-1" data-bs-target="#stage-start-popup"
+                                                        data-bs-toggle="modal" onClick={() => setType('START')}>
+                                                        <div className="start active">
+                                                            <i className="hgi hgi-stroke hgi-play"></i>
+                                                            Ready to Start
+                                                        </div>
+                                                    </button>
+                                                ) :
+                                                    (<button type="button" className="btn-1" data-bs-target="#stage-start-popup"
+                                                        data-bs-toggle="modal" onClick={() => setType('END')}>
+                                                        <div className="complete active">
+                                                            <i className="hgi hgi-stroke hgi-checkmark-circle-01"></i>
+                                                            Mark as Complete
+                                                        </div>
+                                                    </button>)
+                                            }
+                                            {
+                                                currentStatus === 'paused' ? (
+                                                    <button type="button" className="btn-2" onClick={() => setType('RESUME')} data-bs-target="#stage-start-popup"
+                                                        data-bs-toggle="modal">
+                                                        <div className="resume active">
+                                                            <i className="hgi hgi-stroke hgi-play"></i>
+                                                            Resume
+                                                        </div>
+                                                    </button>
+                                                ) : (
+                                                    <button type="button" className="btn-2" onClick={() => setType('PAUSE')} data-bs-target="#stage-start-popup"
+                                                        data-bs-toggle="modal">
+                                                        <div className="pause active">
+                                                            <i className="hgi hgi-stroke hgi-pause"></i>
+                                                            Pause
+                                                        </div>
+                                                    </button>
+                                                )
+                                            }
                                         </div>
                                     </div>
                                     {/* <!-- MOBILE-TAB --> */}

@@ -8,8 +8,6 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
 
     return (
         <>
-
-            {/* <div className="modal fade other-popup" id="reported-issue-popup" tabindex="-1" aria-hidden="true"> */}
             <div className="modal fade other-popup" id="reported-issue-popup" tabIndex={-1} aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">

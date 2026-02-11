@@ -194,8 +194,58 @@
     /* SPOOL-DRAWING-PAGE */
 
 }
+@media only screen and (min-width:800px) and (max-width:1334px) {
+   /* .status-tag.paused {
+    display: none;
+}  */
+.bar-code-wrp {
+    display: none;
+}
+.drow-status-cta-wrp {
+    display: block;
+    flex-wrap: wrap;
+}
+.spool-strip-stat-report p {
+    display: none;
+}
+    .drow-status-cta-wrp {
+        display: flex;
+    }
+        .drow-cta-grp {
+        margin-top: 0;
+        flex-wrap: wrap;
+        width: auto;
+        gap: 10px;
+    }
+      .drow-cta-grp {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 430px;
+        margin-left: auto;
+    }
+   /* .status-tag.my-ready-btn{
+    display: none;
+   } */
+    /* .status-tag.inprogress {
+    display: none;
+    }
+    .status-tag.start {
+    display: none;
+}
+  .status-tag.resume {
+    display: none;
+}
+  .status-tag.pause {
+    display: none;
+} */
+
+}
 
 @media only screen and (min-width:912px) and (max-width:999px) {
+
+    /* .status-tag.paused {
+    display: none;
+} */
 
     /* LOGIN-PAGE */
 
@@ -234,7 +284,7 @@
     /* PROJECTS-PAGE */
 
     .page-wrapper {
-        height: auto;
+        height: 100dvh;
     }
 
     header {
@@ -408,6 +458,10 @@
 
 @media only screen and (min-width:800px) and (max-width:911px) {
 
+    /* .status-tag.paused {
+    display: none;
+} */
+
     /* LOGIN-PAGE */
 
     .login-page {
@@ -445,7 +499,7 @@
     /* PROJECTS-PAGE */
 
     .page-wrapper {
-        height: auto;
+        height: 100dvh;
     }
 
     header {
@@ -619,6 +673,10 @@
 
 @media only screen and (min-width:768px) and (max-width:799px) {
 
+    .status-tag.paused {
+    display: none;
+}
+
     /* LOGIN-PAGE */
 
     .login-page {
@@ -656,7 +714,7 @@
     /* PROJECTS-PAGE */
 
     .page-wrapper {
-        height: auto;
+        height: 100dvh;
     }
 
     header {
