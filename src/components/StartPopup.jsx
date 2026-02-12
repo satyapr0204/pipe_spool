@@ -99,4 +99,4 @@ const StartPopup = ({ type,onScan }) => {
   );
 };
 
-export default StartPopup;
+export default React.memo(StartPopup);

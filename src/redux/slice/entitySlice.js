@@ -9,7 +9,6 @@ export const getAllEntity = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.getAllEntity(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -22,7 +21,6 @@ export const selectEntity = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.selectEntity(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -35,7 +33,6 @@ export const getNotification = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.getNotification(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -48,7 +45,6 @@ export const readNotification = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.readNotification(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -86,7 +82,6 @@ const entitySlice = createSlice({
     setEntity: (state, action) => {
       state.selected = action.payload;
       state.selectedLogo = action.payload?.logo
-      console.log("action", action)
       localStorage.setItem("selectedEntity", JSON.stringify(action.payload));
     },
     resetEntityState: () => initialState
@@ -155,7 +150,6 @@ const entitySlice = createSlice({
         state.error = null;
       })
       .addCase(getNotification.fulfilled, (state, action) => {
-        console.log("action", action?.payload?.data?.notifications)
         state.notifications = action?.payload?.data || [];
         state.loading = false;
       })

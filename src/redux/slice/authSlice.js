@@ -13,9 +13,7 @@ function logouterror() {
 
 async function checkLogin() {
   const token = localStorage.getItem("dreamDrapperAminToken");
-  console.log("token", token)
   if (!token) {
-    console.log("hello object")
     window.location.href = "/";
   }
 }
@@ -26,7 +24,6 @@ export const login = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.loginApi(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -53,12 +50,9 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        // console.log("action?.payload?.data", action?.payload?.data)
         state.userData = action?.payload?.data;
-        // console.log(userData,"thisbjsjssjksfjfka")
         localStorage.setItem('user',JSON.stringify(action?.payload?.data?.user))
         const token = action?.payload?.data?.token;
-        console.log("token", token)
         if (token) {
           Cookies.set("pipeSpool", token, {
             expires: 7,

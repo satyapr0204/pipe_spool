@@ -9,7 +9,6 @@ export const startAndComplateTask = createAsyncThunk(
     async (formData, { rejectWithValue }) => {
         try {
             const response = await api.startComplateTaskApi(formData);
-            console.log("response", response)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -21,7 +20,6 @@ export const pauseAndResumeTask = createAsyncThunk(
     async (formData, { rejectWithValue }) => {
         try {
             const response = await api.pauseResumeTaskApi(formData);
-            console.log("response", response)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -44,7 +42,6 @@ const taskSlice = createSlice({
                 state.error = null;
             })
             .addCase(startAndComplateTask.fulfilled, (state, action) => {
-                console.log("action", action)
                 const spools = action?.payload?.data || [];
                 state.spoolData = spools;
                 state.loading = false;
@@ -61,7 +58,6 @@ const taskSlice = createSlice({
                 state.error = null;
             })
             .addCase(pauseAndResumeTask.fulfilled, (state, action) => {
-                console.log("action", action)
                 const spools = action?.payload?.data || [];
                 state.spoolData = spools;
                 state.loading = false;

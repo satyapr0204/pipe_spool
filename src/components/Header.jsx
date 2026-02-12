@@ -23,16 +23,12 @@ const Header = () => {
   const background = useSelector((state) => state.entity.primaryColor);
   const notifications = useSelector(state => state.entity.notifications)
   const selected = useSelector(state => state.entity.selected)
-  // console.log(notifications?.notifications)
-
   const Logo = useSelector((state) => state.entity.selectedLogo);
-  console.log("Logo from header", Logo)
   const allEntity = useSelector((state) => state.entity.list);
 
   const [showLogout, setShowLogoutModal] = useState(false);
   // const [selectedEntity, setSelectedEntity] = useState("");
   const [notification, setNotification] = useState([]);
-  console.log(notification)
 
   //  const unreadCount = notifications.filter(n => !n.read).length;
   const unreadCount = notification?.filter(n => n.isUnread).length;
@@ -62,7 +58,6 @@ const Header = () => {
     }
   }, [notifications])
 
-  console.log("notifications from header", notifications)
 
   useEffect(() => {
     dispatch(getNotification())
@@ -70,7 +65,6 @@ const Header = () => {
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
-    console.log("userData", userData)
     if (!userData) return;
     if (selected?.id) {
       dispatch(selectEntity({ entity_id: selected.id }));
@@ -89,7 +83,6 @@ const Header = () => {
     [dispatch, selected]
   );
   // );
-  console.log("hideHeader", hideHeader)
 
   useEffect(() => {
     dispatch(getAllEntity());
@@ -125,7 +118,6 @@ const Header = () => {
   // }, []);
   const flushReadNotifications = async () => {
     const ids = Array.from(pendingReadIdsRef.current);
-    console.log("ids", ids)
     if (ids.length === 0) return;
 
     try {
@@ -149,9 +141,7 @@ const Header = () => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const id = entry.target.dataset.id;
-          // console.log("id", entry)
           const isRead = entry.target.dataset.isRead === "1";
-          console.log("isRead", isRead)
           if (isRead) return;
           if (!pendingReadIdsRef.current.has(id)) {
             pendingReadIdsRef.current.add(id);

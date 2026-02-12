@@ -70,7 +70,6 @@ const DrawingSpool = () => {
 
     const onScan = async (eventCall) => {
         try {
-            console.log("eventCall ", eventCall)
             const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
             const project_id = spoolDetails?.project?.id
             const spool_id = spoolId
@@ -133,8 +132,8 @@ const DrawingSpool = () => {
                         toast.error('Your task is already in progress!')
                     }
                 }
-                const taskData = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
-                console.log("taskData", taskData?.payload?.data?.stage_barcode?.stage_status)
+                 await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+                
             } else {
                 console.log("You have a wronge event call")
             }
@@ -152,8 +151,6 @@ const DrawingSpool = () => {
             window.removeEventListener("focus", handleWindowFocus);
         };
     }, []);
-
-    console.log(spoolDetails?.flag_status, "flag_status")
 
     useEffect(() => {
         if (state?.spool_id && state?.stage_id) {
@@ -368,7 +365,6 @@ const DrawingSpool = () => {
 
 
     const handleReportIssueSubmit = async (reason) => {
-        console.log("reson", reason)
         if (!reason || reason.trim().length === 0) {
             toast.error("Please enter the issue description")
             return
@@ -565,4 +561,4 @@ const DrawingSpool = () => {
     )
 }
 
-export default DrawingSpool
+export default React.memo(DrawingSpool)

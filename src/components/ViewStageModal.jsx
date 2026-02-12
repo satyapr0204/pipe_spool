@@ -31,8 +31,6 @@ const ViewStageModal = ({ initialId }) => {
     const { spoolData } = useSelector((state) => state.spools)
     const [allStages, setAllStages] = useState([]);
     const [spools, setSpools] = useState(null)
-    console.log(allStages)
-
     useEffect(() => {
         if (initialId) {
             dispatch(fetchSpools({ spool_id: initialId }))
@@ -117,4 +115,4 @@ const ViewStageModal = ({ initialId }) => {
         </>
     )
 }
-export default ViewStageModal
+export default React.memo(ViewStageModal)

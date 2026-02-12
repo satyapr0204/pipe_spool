@@ -31,4 +31,4 @@ const CompletePopup = () => {
   )
 }
 
-export default CompletePopup
+export default React.memo(CompletePopup)

@@ -50,4 +50,4 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
     )
 }
 
-export default ReportedIssuePopup
+export default React.memo(ReportedIssuePopup)

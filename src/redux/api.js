@@ -13,7 +13,6 @@ export const API = axios.create({
 
 function getCookie() {
   const userCookie = Cookies.get("pipeSpool");
-  let token = null;
   return userCookie;
 }
 
@@ -26,19 +25,15 @@ API.interceptors.request.use((config) => {
   let token = null;
 
   if (userCookie) {
-    console.log("object", userCookie)
     token = userCookie;
-
   } else {
     Cookies.remove("pipeSpool");
   }
-
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   } else {
     delete config.headers["Authorization"];
   }
-
   return config;
 }, (error) => Promise.reject(error)
 );
@@ -49,16 +44,13 @@ API.interceptors.response.use((response) => response, (error) => {
 
   if (message === "Unauthenticated." || error?.response?.status === 401) {
     toast.error("Token Expired");
-    Cookies.remove("pipeSpool");  // 🚀 delete cookie
-
+    Cookies.remove("pipeSpool");  
     setTimeout(() => {
       window.location.href = "/";
     }, 500);
   }
-
   return Promise.reject(error);
-}
-);
+});
 
 // --------------------------- API FUNCTIONS ---------------------------
 

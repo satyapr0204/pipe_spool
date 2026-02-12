@@ -56,4 +56,4 @@ const Logout = ({ show, handleClose }) => {
   );
 };
 
-export default Logout;
+export default React.memo(Logout);

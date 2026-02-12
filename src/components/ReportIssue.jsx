@@ -15,7 +15,7 @@ const ReportIssue = ({ issueReason }) => {
                             <div className="other-popup-in">
                                 <div className="other-popup-icon" style={{
                                     background: background,
-                                    color:'white'
+                                    color: 'white'
                                 }}>
                                     <i className="hgi hgi-stroke hgi-flag-03"></i>
                                 </div>
@@ -37,4 +37,4 @@ const ReportIssue = ({ issueReason }) => {
     )
 }
 
-export default ReportIssue
+export default React.memo(ReportIssue)

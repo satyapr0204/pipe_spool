@@ -205,8 +205,8 @@ const Spool = () => {
                   <tbody>
 
                     {currentItems?.length > 0 ? (
-                      currentItems?.map((item) => (
-                        <tr key={item?.id}>
+                      currentItems?.map((item,index) => (
+                        <tr key={index}>
                           <td>
                             <div className="spool-tag" style={{
                               background: background
@@ -330,4 +330,4 @@ const Spool = () => {
   );
 };
 
-export default Spool;
+export default React.memo(Spool);
