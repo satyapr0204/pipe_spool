@@ -67,8 +67,6 @@ const Header = () => {
     }
   }, [selected?.id, dispatch]);
 
-  console.log("hideHeader", hideHeader)
-
   const handleSelectEntity = useCallback(
     (entity) => {
       if (!entity) return;
