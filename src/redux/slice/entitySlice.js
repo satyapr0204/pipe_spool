@@ -4,7 +4,6 @@ import * as api from "../api";
 import { toast } from "react-toastify";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-
 export const getAllEntity = createAsyncThunk(
   "user/getAllEntity",
   async (formData, { rejectWithValue }) => {
@@ -69,7 +68,6 @@ const initialState = {
   error: null
 };
 
-
 const entitySlice = createSlice({
   name: "entity",
   // initialState: {
@@ -123,8 +121,6 @@ const entitySlice = createSlice({
         state.error = action.payload || action.error.message;
         // toast.error(action?.payload?.message)
       })
-
-
       .addCase(selectEntity.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -135,22 +131,17 @@ const entitySlice = createSlice({
         const primary = projects?.[0]?.entity?.entity_primary_color;
         const secondary = projects?.[0]?.entity?.entity_secondary_color;
         state.primaryColor = secondary;
-
         state.theme = primary && secondary
           ? `linear-gradient(135deg, ${secondary}, #fff)`
           : "";
-
         if (projects?.[0]?.entity) {
           state.selected = projects[0].entity;
           // state.selectedLogo = projects?.[0]?.entity?.logo;
           localStorage.setItem("selectedEntity", JSON.stringify(projects[0].entity));
         }
-
         state.loading = false;
         // toast.success(action?.payload?.message)
       })
-
-
       .addCase(selectEntity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
@@ -158,10 +149,11 @@ const entitySlice = createSlice({
 
       })
 
-    builder.addCase(getNotification.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
+    builder
+      .addCase(getNotification.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(getNotification.fulfilled, (state, action) => {
         console.log("action", action?.payload?.data?.notifications)
         state.notifications = action?.payload?.data || [];
@@ -172,21 +164,20 @@ const entitySlice = createSlice({
         state.error = action.payload || action.error.message;
         toast.error(action?.payload?.message || "Failed to fetch notifications");
       })
-
-    // .addCase(readNotification.pending, (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // })
-    // .addCase(readNotification.fulfilled, (state, action) => {                          
-    //   // state.notifications = action?.payload?.data || [];
-    //   state.loading = false;
-    // })
-    // .addCase(readNotification.rejected, (state, action) => {     
-    //   state.loading = false; // ✅ FIX
-    //   state.error = action.payload || action.error.message;
-    //   toast.error(action?.payload?.message || "Failed to fetch notifications");
-    // })
-
+    builder
+      .addCase(readNotification.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(readNotification.fulfilled, (state, action) => {
+        // state.notifications = action?.payload?.data || [];
+        state.loading = false;
+      })
+      .addCase(readNotification.rejected, (state, action) => {
+        state.loading = false; // ✅ FIX
+        state.error = action.payload || action.error.message;
+        toast.error(action?.payload?.message || "Failed to fetch notifications");
+      })
   }
 });
 

@@ -16,7 +16,7 @@ const Header = () => {
   const debounceTimerRef = useRef(null);
 
   const hideHeader = ["/spool", "/drawing-spool"].includes(location.pathname);
-  const hideLogout = ["/drawing-spool"].includes(location.pathname)
+  const hideLogout = ["/drawing-spool"].includes(location.pathname);
   const user = JSON.parse(localStorage.getItem('user'))
 
   const userData = useSelector((state) => state.authuser)
@@ -70,7 +70,7 @@ const Header = () => {
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
-    console.log("userData",userData)
+    console.log("userData", userData)
     if (!userData) return;
     if (selected?.id) {
       dispatch(selectEntity({ entity_id: selected.id }));
@@ -89,7 +89,7 @@ const Header = () => {
     [dispatch, selected]
   );
   // );
-
+  console.log("hideHeader", hideHeader)
 
   useEffect(() => {
     dispatch(getAllEntity());
@@ -105,8 +105,7 @@ const Header = () => {
     let entityToSelect;
 
     if (selected) {
-      // already selected, do nothing
-      return;
+      return ;
     } else if (savedEntity) {
       entityToSelect = allEntity.find(e => e.id === savedEntity.id) || allEntity[0];
     } else {
