@@ -28,10 +28,6 @@ const Header = () => {
 
   const [showLogout, setShowLogoutModal] = useState(false);
   const [notification, setNotification] = useState([]);
-  console.log(notification)
-
-  //  const unreadCount = notifications.filter(n => !n.read).length;
-  const unreadCount = notification?.filter(n => n.isUnread).length;
   const timeAgo = (createdAt) => {
     const now = new Date();
     const createdTime = new Date(createdAt);
@@ -64,7 +60,9 @@ const Header = () => {
   }, [])
 
   useEffect(() => {
-    if (selected?.id) {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (!userData) return;
+    if (selected?.id && !hideHeader) {
       dispatch(selectEntity({ entity_id: selected.id }));
     }
   }, [selected?.id, dispatch]);
@@ -80,9 +78,7 @@ const Header = () => {
     },
     [dispatch, selected]
   );
-  // );
-
-
+  
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
@@ -97,7 +93,6 @@ const Header = () => {
     let entityToSelect;
 
     if (selected) {
-      // already selected, do nothing
       return;
     } else if (savedEntity) {
       entityToSelect = allEntity.find(e => e.id === savedEntity.id) || allEntity[0];
