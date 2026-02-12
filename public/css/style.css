@@ -755,7 +755,7 @@ button.logout-cta {
   input.srch-field {
     width: 320px;
     height: 48px;
-    padding: 10px;
+    padding: 10px 40px 10px 10px;
     border-radius: 12px;
     background-color: var(--white);
     border: 1px solid #00000066;
@@ -786,6 +786,15 @@ button.logout-cta {
   overflow: auto;
 }
 
+/* .project-item {
+  width: 100%;
+  background-color: var(--white);
+  border: 1px solid #55555540;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+} */
+
 .project-item {
   width: 100%;
   background-color: var(--white);
@@ -793,6 +802,7 @@ button.logout-cta {
   padding: 10px;
   border-radius: 12px;
   margin-bottom: 20px;
+  height: 110px;
 }
 
 .project-item h4 {
@@ -1063,9 +1073,11 @@ a.back-cta {
 
 .spools-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    padding: 20px;
+    flex-wrap: wrap;
 
   h1 {
     display: flex;
@@ -1444,7 +1456,7 @@ main.spools-page .pagination-wrp p {
   }
 
   img {
-    width: 300px;
+    width: 381px;
     background-color: var(--white);
     border: 5px solid;
     border-color: var(--black);

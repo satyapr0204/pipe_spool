@@ -4,13 +4,11 @@ import * as api from "../api";
 import { toast } from "react-toastify";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-
- export const getAllEntity = createAsyncThunk(
+export const getAllEntity = createAsyncThunk(
   "user/getAllEntity",
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.getAllEntity(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -18,12 +16,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const selectEntity = createAsyncThunk(
+export const selectEntity = createAsyncThunk(
   "user/selectEntity",
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.selectEntity(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -31,12 +28,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const getNotification = createAsyncThunk(
+export const getNotification = createAsyncThunk(
   "user/getNotification",
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.getNotification(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -44,12 +40,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
- export const readNotification = createAsyncThunk(
+export const readNotification = createAsyncThunk(
   "user/readNotification",
   async (formData, { rejectWithValue }) => {
     try {
       const response = await api.readNotification(formData);
-      console.log("response", response)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -57,23 +52,36 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
   }
 );
 
-        
+const initialState = {
+  list: [],
+  selected: null,
+  project: [],
+  notifications: [],
+  theme: null,
+  primaryColor: null,
+  selectedLogo: null,
+  loading: false,
+  error: null
+};
+
 const entitySlice = createSlice({
   name: "entity",
-  initialState: {
-    list: [],
-    selected: null,
-    project: [],
-    notifications:[],
-    theme: null,
-    primaryColor: null,
-    selectedLogo: null,
-    loading: false,
-    error: null
-  },
+  // initialState: {
+  //   list: [],
+  //   selected: null,
+  //   project: [],
+  //   notifications: [],
+  //   theme: null,
+  //   primaryColor: null,
+  //   selectedLogo: null,
+  //   loading: false,
+  //   error: null
+  // },
+  initialState,
   reducers: {
     setEntity: (state, action) => {
       state.selected = action.payload;
+      state.selectedLogo = action.payload?.logo
       localStorage.setItem("selectedEntity", JSON.stringify(action.payload));
     },
     resetEntityState: () => initialState
@@ -87,27 +95,27 @@ const entitySlice = createSlice({
       .addCase(getAllEntity.fulfilled, (state, action) => {
         const entities = action?.payload?.data || [];
         state.list = entities;
-        state.selected = entities[0];
         state.loading = false;
-
         const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-        console.log(savedEntity)
         if (savedEntity) {
-          // restore saved entity if it exists
-          const entity = entities.find(e => e.id === savedEntity.id) || entities[0];
-          state.selected = entity;
-        } else if (!state.selected && entities.length > 0) {
-          state.selected = entities[0]
+          const validEntity = entities.find(e => e.id === savedEntity.id);
+          state.selected = validEntity || entities[0] || null;
+          state.selectedLogo = entities[0]?.logo;
+        } else {
+          state.selectedLogo = entities[0]?.logo || null;
+          state.selected = entities[0] || null;
         }
-        // toast.success(action?.payload?.message)
+        if (state.selected) {
+          localStorage.setItem("selectedEntity", JSON.stringify(state.selected));
+          localStorage.setItem("logo", JSON.stringify(entities[0]?.logo));
+        }
       })
+
       .addCase(getAllEntity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
         // toast.error(action?.payload?.message)
       })
-
-
       .addCase(selectEntity.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,16 +126,14 @@ const entitySlice = createSlice({
         const primary = projects?.[0]?.entity?.entity_primary_color;
         const secondary = projects?.[0]?.entity?.entity_secondary_color;
         state.primaryColor = secondary;
-        state.selectedLogo = projects?.[0]?.entity?.logo;
         state.theme = primary && secondary
-          ? `linear-gradient(135deg, ${primary}, ${secondary})`
+          ? `linear-gradient(135deg, ${secondary}, #fff)`
           : "";
-
         if (projects?.[0]?.entity) {
           state.selected = projects[0].entity;
+          // state.selectedLogo = projects?.[0]?.entity?.logo;
           localStorage.setItem("selectedEntity", JSON.stringify(projects[0].entity));
         }
-
         state.loading = false;
         // toast.success(action?.payload?.message)
       })
@@ -135,40 +141,39 @@ const entitySlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error.message;
         // toast.error(action?.payload?.message)
-      
+
       })
 
-      builder.addCase(getNotification.pending, (state) => {
+    builder
+      .addCase(getNotification.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getNotification.fulfilled, (state, action) => {   
-        console.log("action",action?.payload?.data?.notifications)                       
+      .addCase(getNotification.fulfilled, (state, action) => {
         state.notifications = action?.payload?.data || [];
         state.loading = false;
       })
-      .addCase(getNotification.rejected, (state, action) => {     
+      .addCase(getNotification.rejected, (state, action) => {
         state.loading = false; // ✅ FIX
         state.error = action.payload || action.error.message;
         toast.error(action?.payload?.message || "Failed to fetch notifications");
       })
-
-      // .addCase(readNotification.pending, (state) => {
-      //   state.loading = true;
-      //   state.error = null;
-      // })
-      // .addCase(readNotification.fulfilled, (state, action) => {                          
-      //   // state.notifications = action?.payload?.data || [];
-      //   state.loading = false;
-      // })
-      // .addCase(readNotification.rejected, (state, action) => {     
-      //   state.loading = false; // ✅ FIX
-      //   state.error = action.payload || action.error.message;
-      //   toast.error(action?.payload?.message || "Failed to fetch notifications");
-      // })
-
-    }
+    builder
+      .addCase(readNotification.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(readNotification.fulfilled, (state, action) => {
+        // state.notifications = action?.payload?.data || [];
+        state.loading = false;
+      })
+      .addCase(readNotification.rejected, (state, action) => {
+        state.loading = false; // ✅ FIX
+        state.error = action.payload || action.error.message;
+        toast.error(action?.payload?.message || "Failed to fetch notifications");
+      })
+  }
 });
 
-export const { setEntity,resetEntityState } = entitySlice.actions;
+export const { setEntity, resetEntityState } = entitySlice.actions;
 export default entitySlice.reducer;

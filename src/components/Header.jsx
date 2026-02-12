@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllEntity, getNotification, readNotification, selectEntity, setEntity } from "../redux/slice/entitySlice";
 import Logout from "./Logout";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 
@@ -10,29 +10,24 @@ const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
 const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const pendingReadIdsRef = useRef(new Set());
   const debounceTimerRef = useRef(null);
 
   const hideHeader = ["/spool", "/drawing-spool"].includes(location.pathname);
+  const hideLogout = ["/drawing-spool"].includes(location.pathname);
   const user = JSON.parse(localStorage.getItem('user'))
 
   const userData = useSelector((state) => state.authuser)
   const background = useSelector((state) => state.entity.primaryColor);
   const notifications = useSelector(state => state.entity.notifications)
   const selected = useSelector(state => state.entity.selected)
-  // console.log(notifications?.notifications)
-
   const Logo = useSelector((state) => state.entity.selectedLogo);
   const allEntity = useSelector((state) => state.entity.list);
 
   const [showLogout, setShowLogoutModal] = useState(false);
-  // const [selectedEntity, setSelectedEntity] = useState("");
   const [notification, setNotification] = useState([]);
-  console.log(notification)
-
-  //  const unreadCount = notifications.filter(n => !n.read).length;
-  const unreadCount = notification?.filter(n => n.isUnread).length;
   const timeAgo = (createdAt) => {
     const now = new Date();
     const createdTime = new Date(createdAt);
@@ -59,14 +54,15 @@ const Header = () => {
     }
   }, [notifications])
 
-  console.log("notifications from header", notifications)
 
   useEffect(() => {
     dispatch(getNotification())
   }, [])
 
   useEffect(() => {
-    if (selected?.id) {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (!userData) return;
+    if (selected?.id && !hideHeader) {
       dispatch(selectEntity({ entity_id: selected.id }));
     }
   }, [selected?.id, dispatch]);
@@ -82,9 +78,7 @@ const Header = () => {
     },
     [dispatch, selected]
   );
-  // );
-
-
+  
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
@@ -99,7 +93,6 @@ const Header = () => {
     let entityToSelect;
 
     if (selected) {
-      // already selected, do nothing
       return;
     } else if (savedEntity) {
       entityToSelect = allEntity.find(e => e.id === savedEntity.id) || allEntity[0];
@@ -108,21 +101,20 @@ const Header = () => {
     }
 
     dispatch(setEntity(entityToSelect));
-    dispatch(selectEntity({ entity_id: entityToSelect.id }));
+    if (!hideHeader) {
+      dispatch(selectEntity({ entity_id: entityToSelect.id }));
+    }
   }, [allEntity, selected, dispatch]);
 
 
-  useEffect(() => {
-    const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-    console.log(savedEntity)
-    if (savedEntity) {
-      dispatch(setEntity(savedEntity));
-    }
-  }, [dispatch]);
-
+  // useEffect(() => {
+  //   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
+  //   if (savedEntity) {
+  //     dispatch(setEntity(savedEntity));
+  //   }
+  // }, []);
   const flushReadNotifications = async () => {
     const ids = Array.from(pendingReadIdsRef.current);
-    console.log("ids", ids)
     if (ids.length === 0) return;
 
     try {
@@ -145,7 +137,6 @@ const Header = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-
           const id = entry.target.dataset.id;
           const isRead = entry.target.dataset.isRead === "1";
           if (isRead) return;
@@ -175,10 +166,6 @@ const Header = () => {
       }
     };
   }, [notification]);
-
-
-
-
 
   return (
     <>
@@ -232,12 +219,6 @@ const Header = () => {
                               type="button"
                               className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
                                 }`}
-                              // onClick={() =>
-                              // {  
-                              //   setSelectedEntity(entity||"")
-                              //   dispatch(selectEntity({entity_id:entity?.id}))
-                              // }
-                              // }
 
                               onClick={() => {
                                 handleSelectEntity(entity)
@@ -265,33 +246,53 @@ const Header = () => {
                       {notifications?.notification_count}
                     </span>
                   </button>
-
                   <div className="dropdown-menu dropdown-menu-end">
-                    <div className="noti-dropdown">
+                    <div className="noti-dropdown" >
                       <h2 style={{ color: background }}>Notifications</h2>
                       <div className="noti-scroll">
                         <div className="noti-list">
-                          {notification?.map((item) => (
-                            <div className="noti-in" key={item?.id} data-id={item?.id}
-                              data-is-read={item?.is_read} style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}>
-                              <h3>
-                                {item?.get_spool?.spool_number} {item?.is_read === 0 && (<span></span>)} <b>{timeAgo(item.created_at)}</b>
-                              </h3>
-                              <p>{item?.get_project?.project_name}</p>
-                              <p>
-                                <b>Admin reply:</b> {item?.message}
-                              </p>
+                          {notification?.length > 0 ? (
+                            <div className="noti-list" >
+                              {notification.map((item) => (
+                                <div className="noti-in" data-is-read={item?.is_read}
+                                  data-id={item?.id} key={item?.id}>
+                                  <Link
+                                    to="/drawing-spool"
+                                    data-id={item?.id}
+                                    state={{
+                                      stage_id: item?.stage_id,
+                                      spool_id: item?.spool_id,
+                                    }}
+                                    data-is-read={item?.is_read}
+                                    style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
+                                  >
+                                    <h3>
+                                      {item?.get_spool?.spool_number}
+                                      {item?.is_read === 0 && <span></span>}
+                                      <b>{timeAgo(item.created_at)}</b>
+                                    </h3>
+
+                                    <p>{item?.get_project?.project_name}</p>
+
+                                    <p>
+                                      <b>Admin reply:</b> {item?.message}
+                                    </p>
+                                  </Link>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          ) : (
+                            <div className="noti-list text-center">
+                              No notifications found.
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-
                 {/* LOGOUT */}
-                <button
+                {!hideLogout && <button
                   onClick={() => setShowLogoutModal(true)}
                   className="logout-cta"
                   style={{ background: background }}
@@ -300,7 +301,7 @@ const Header = () => {
                   data-bs-target="#logout-popup"
                 >
                   Logout <i className="hgi hgi-stroke hgi-logout-circle-02"></i>
-                </button>
+                </button>}
               </div>
             </div>
           </div>

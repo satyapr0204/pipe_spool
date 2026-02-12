@@ -9,7 +9,6 @@ export const spoolByProject = createAsyncThunk(
     async (formData, { rejectWithValue }) => {
         try {
             const response = await api.spoolsApi(formData);
-            console.log("response", response)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);

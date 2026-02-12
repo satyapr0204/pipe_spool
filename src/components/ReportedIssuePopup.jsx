@@ -8,8 +8,6 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
 
     return (
         <>
-
-            {/* <div className="modal fade other-popup" id="reported-issue-popup" tabindex="-1" aria-hidden="true"> */}
             <div className="modal fade other-popup" id="reported-issue-popup" tabIndex={-1} aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -18,9 +16,6 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
                         </button>
                         <div className="modal-body">
                             <div className="other-popup-in">
-                                {/* <div className="other-popup-icon">
-                            <i className="hgi hgi-stroke hgi-alert-01"></i>
-                        </div> */}
                                 <div className="other-popup-icon" style={{ background: background }}>
                                     <i className="hgi hgi-stroke hgi-alert-01" style={{ color: background && "white" }}></i>
                                 </div>
@@ -55,4 +50,4 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
     )
 }
 
-export default ReportedIssuePopup
+export default React.memo(ReportedIssuePopup)

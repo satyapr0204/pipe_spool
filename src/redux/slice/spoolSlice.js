@@ -9,7 +9,6 @@ export const fetchSpools = createAsyncThunk(
     async (formData, { rejectWithValue }) => {
         try {
             const response = await api.fetchSpoolsApi(formData);
-            console.log("response", response)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -22,7 +21,6 @@ export const fetchSpoolsDrawing = createAsyncThunk(
     async (formData, { rejectWithValue }) => {
         try {
             const response = await api.fetchSpoolsDrawingApi(formData);
-            console.log("response", response)
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -46,7 +44,6 @@ const spoolSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchSpools.fulfilled, (state, action) => {
-                console.log("action", action)
                 const spools = action?.payload?.data || [];
                 state.spoolData = spools;
                 state.loading = false;
@@ -63,7 +60,6 @@ const spoolSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchSpoolsDrawing.fulfilled, (state, action) => {
-                console.log("action", action)
                 const spoolDetails = action?.payload?.data || [];
                 state.spoolDrawingDetails = spoolDetails;
                 state.loading = false;

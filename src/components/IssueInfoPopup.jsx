@@ -39,4 +39,4 @@ const IssueInfoPopup = ({ onSubmit }) => {
     )
 }
 
-export default IssueInfoPopup
+export default React.memo(IssueInfoPopup)

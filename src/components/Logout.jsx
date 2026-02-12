@@ -24,7 +24,7 @@ const Logout = ({ show, handleClose }) => {
     dispatch(setEntity(null));
     toast.success("Logged out successfully");
     navigator('/');
-    //  dispatch(resetEntityState())
+    dispatch(resetEntityState())
   }
 
   return (
@@ -37,8 +37,8 @@ const Logout = ({ show, handleClose }) => {
           </button>
           <div className="modal-body">
             <div className="other-popup-in">
-              <div className="other-popup-icon"  style={{background:background}}>
-                <i className="hgi hgi-stroke hgi-logout-circle-02" style={{color:background && "white"}}></i>
+              <div className="other-popup-icon" style={{ background: background }}>
+                <i className="hgi hgi-stroke hgi-logout-circle-02" style={{ color: background && "white" }}></i>
               </div>
               <div className="other-popup-data">
                 <h1>Logout</h1>
@@ -46,7 +46,7 @@ const Logout = ({ show, handleClose }) => {
               </div>
               <div className="other-popup-cta-grp">
                 <button type="button" className="primary-cta" data-bs-dismiss="modal" onClick={handleLogout}>Logout</button>
-                <button type="button" className="primary-cta non-active" style={{borderColor:background,color:background}} data-bs-dismiss="modal">Cancel</button>
+                <button type="button" className="primary-cta non-active" style={{ borderColor: background, color: background }} data-bs-dismiss="modal">Cancel</button>
               </div>
             </div>
           </div>
@@ -56,4 +56,4 @@ const Logout = ({ show, handleClose }) => {
   );
 };
 
-export default Logout;
+export default React.memo(Logout);

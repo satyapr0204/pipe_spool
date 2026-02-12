@@ -21,8 +21,6 @@ const Dashboard = () => {
 
   const [search, setSearch] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
-  console.log(filteredProjects);
-
   // useEffect(() => {
   //   const time=setTimeout=(()=>{
 
@@ -60,7 +58,6 @@ const Dashboard = () => {
     return () => clearTimeout(handler);
   }, [search, projects]);
 
-  console.log(projects);
   const totalItems = filteredProjects?.length;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredProjects?.slice(
@@ -70,7 +67,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div class="page-wrapper">
+      <div className="page-wrapper">
         <Header />
 
         <main className="projects-page">
@@ -86,14 +83,6 @@ const Dashboard = () => {
               </div>
               <div className="col-lg-6 col-md-6">
                 <div className="page-search">
-                  {/* <input
-                  type="text"
-                  value={search}
-                  onChange={()=>setSearch(e.target.value)}
-                  placeholder="Search by project name…"
-                  className="srch-field"
-                /> */}
-
                   <input
                     type="text"
                     value={search}
@@ -162,4 +151,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);
