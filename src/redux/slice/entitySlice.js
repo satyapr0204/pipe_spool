@@ -57,20 +57,33 @@ export const readNotification = createAsyncThunk(
   }
 );
 
+const initialState = {
+  list: [],
+  selected: null,
+  project: [],
+  notifications: [],
+  theme: null,
+  primaryColor: null,
+  selectedLogo: null,
+  loading: false,
+  error: null
+};
+
 
 const entitySlice = createSlice({
   name: "entity",
-  initialState: {
-    list: [],
-    selected: null,
-    project: [],
-    notifications: [],
-    theme: null,
-    primaryColor: null,
-    selectedLogo: null,
-    loading: false,
-    error: null
-  },
+  // initialState: {
+  //   list: [],
+  //   selected: null,
+  //   project: [],
+  //   notifications: [],
+  //   theme: null,
+  //   primaryColor: null,
+  //   selectedLogo: null,
+  //   loading: false,
+  //   error: null
+  // },
+  initialState,
   reducers: {
     setEntity: (state, action) => {
       state.selected = action.payload;

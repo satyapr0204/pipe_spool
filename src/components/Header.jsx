@@ -68,11 +68,11 @@ const Header = () => {
     dispatch(getNotification())
   }, [])
 
-
   useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    console.log("userData",userData)
+    if (!userData) return;
     if (selected?.id) {
-      if (!user) return;
-
       dispatch(selectEntity({ entity_id: selected.id }));
     }
   }, [selected?.id, dispatch]);

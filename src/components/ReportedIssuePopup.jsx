@@ -16,9 +16,6 @@ const ReportedIssuePopup = ({ handleSubmit }) => {
                         </button>
                         <div className="modal-body">
                             <div className="other-popup-in">
-                                {/* <div className="other-popup-icon">
-                            <i className="hgi hgi-stroke hgi-alert-01"></i>
-                        </div> */}
                                 <div className="other-popup-icon" style={{ background: background }}>
                                     <i className="hgi hgi-stroke hgi-alert-01" style={{ color: background && "white" }}></i>
                                 </div>
