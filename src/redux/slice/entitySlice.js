@@ -74,6 +74,8 @@ const entitySlice = createSlice({
   reducers: {
     setEntity: (state, action) => {
       state.selected = action.payload;
+      state.selectedLogo = action.payload?.logo
+      console.log("action", action)
       localStorage.setItem("selectedEntity", JSON.stringify(action.payload));
     },
     resetEntityState: () => initialState
@@ -87,20 +89,22 @@ const entitySlice = createSlice({
       .addCase(getAllEntity.fulfilled, (state, action) => {
         const entities = action?.payload?.data || [];
         state.list = entities;
-        state.selected = entities[0];
         state.loading = false;
-
         const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-        console.log(savedEntity)
         if (savedEntity) {
-          // restore saved entity if it exists
-          const entity = entities.find(e => e.id === savedEntity.id) || entities[0];
-          state.selected = entity;
-        } else if (!state.selected && entities.length > 0) {
-          state.selected = entities[0]
+          const validEntity = entities.find(e => e.id === savedEntity.id);
+          state.selected = validEntity || entities[0] || null;
+          state.selectedLogo = entities[0]?.logo;
+        } else {
+          state.selectedLogo = entities[0]?.logo || null;
+          state.selected = entities[0] || null;
         }
-        // toast.success(action?.payload?.message)
+        if (state.selected) {
+          localStorage.setItem("selectedEntity", JSON.stringify(state.selected));
+          localStorage.setItem("logo", JSON.stringify(entities[0]?.logo));
+        }
       })
+
       .addCase(getAllEntity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
@@ -118,19 +122,22 @@ const entitySlice = createSlice({
         const primary = projects?.[0]?.entity?.entity_primary_color;
         const secondary = projects?.[0]?.entity?.entity_secondary_color;
         state.primaryColor = secondary;
-        state.selectedLogo = projects?.[0]?.entity?.logo;
+
         state.theme = primary && secondary
           ? `linear-gradient(135deg, ${secondary}, #fff)`
           : "";
 
         if (projects?.[0]?.entity) {
           state.selected = projects[0].entity;
+          // state.selectedLogo = projects?.[0]?.entity?.logo;
           localStorage.setItem("selectedEntity", JSON.stringify(projects[0].entity));
         }
 
         state.loading = false;
         // toast.success(action?.payload?.message)
       })
+
+
       .addCase(selectEntity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;

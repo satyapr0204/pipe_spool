@@ -26,6 +26,7 @@ const Header = () => {
   // console.log(notifications?.notifications)
 
   const Logo = useSelector((state) => state.entity.selectedLogo);
+  console.log("Logo from header", Logo)
   const allEntity = useSelector((state) => state.entity.list);
 
   const [showLogout, setShowLogoutModal] = useState(false);
@@ -67,11 +68,14 @@ const Header = () => {
     dispatch(getNotification())
   }, [])
 
+
   useEffect(() => {
     if (selected?.id) {
+      if (!user) return;
+
       dispatch(selectEntity({ entity_id: selected.id }));
     }
-  }, [selected?.id, dispatch]);
+  }, [selected?.id, dispatch, user]);
 
   const handleSelectEntity = useCallback(
     (entity) => {
@@ -114,14 +118,12 @@ const Header = () => {
   }, [allEntity, selected, dispatch]);
 
 
-  useEffect(() => {
-    const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-    console.log(savedEntity)
-    if (savedEntity) {
-      dispatch(setEntity(savedEntity));
-    }
-  }, [dispatch]);
-
+  // useEffect(() => {
+  //   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
+  //   if (savedEntity) {
+  //     dispatch(setEntity(savedEntity));
+  //   }
+  // }, []);
   const flushReadNotifications = async () => {
     const ids = Array.from(pendingReadIdsRef.current);
     console.log("ids", ids)
@@ -178,8 +180,6 @@ const Header = () => {
       }
     };
   }, [notification]);
-
-
 
   return (
     <>
@@ -265,36 +265,6 @@ const Header = () => {
                       <h2 style={{ color: background }}>Notifications</h2>
                       <div className="noti-scroll">
                         <div className="noti-list">
-                          {/* {notification?.map((item) => (
-                            <div className="noti-in" data-is-read={item?.is_read}
-                              data-id={item?.id}>
-                              <Link
-                                to="/drawing-spool"
-
-                                key={item?.id}
-                                // data-id={item?.id}
-                                state={{
-                                  stage_id: item?.stage_id,
-                                  spool_id: item?.spool_id,
-                                }}
-
-                                style={{ fontWeight: item?.isUnread ? "bold" : "normal" }}
-                              >
-                                <h3>
-                                  {item?.get_spool?.spool_number}
-                                  {item?.is_read === 0 && <span></span>}
-                                  <b>{timeAgo(item.created_at)}</b>
-                                </h3>
-
-                                <p>{item?.get_project?.project_name}</p>
-
-                                <p>
-                                  <b>Admin reply:</b> {item?.message}
-                                </p>
-                              </Link>
-                            </div>
-
-                          ))} */}
                           {notification?.length > 0 ? (
                             <div className="noti-list" >
                               {notification.map((item) => (

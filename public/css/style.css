@@ -786,6 +786,15 @@ button.logout-cta {
   overflow: auto;
 }
 
+/* .project-item {
+  width: 100%;
+  background-color: var(--white);
+  border: 1px solid #55555540;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+} */
+
 .project-item {
   width: 100%;
   background-color: var(--white);
@@ -793,6 +802,7 @@ button.logout-cta {
   padding: 10px;
   border-radius: 12px;
   margin-bottom: 20px;
+  height: 110px;
 }
 
 .project-item h4 {
