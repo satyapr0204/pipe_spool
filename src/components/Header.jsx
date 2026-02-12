@@ -75,7 +75,7 @@ const Header = () => {
 
       dispatch(selectEntity({ entity_id: selected.id }));
     }
-  }, [selected?.id, dispatch, user]);
+  }, [selected?.id, dispatch]);
 
   const handleSelectEntity = useCallback(
     (entity) => {
