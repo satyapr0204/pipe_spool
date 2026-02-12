@@ -67,6 +67,8 @@ const Header = () => {
     }
   }, [selected?.id, dispatch]);
 
+  console.log("hideHeader", hideHeader)
+
   const handleSelectEntity = useCallback(
     (entity) => {
       if (!entity) return;
@@ -78,7 +80,7 @@ const Header = () => {
     },
     [dispatch, selected]
   );
-  
+
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
@@ -131,7 +133,6 @@ const Header = () => {
       console.error("Failed to mark notifications as read", error);
     }
   };
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -156,7 +157,6 @@ const Header = () => {
         threshold: 0.6,
       }
     );
-
     const elements = document.querySelectorAll(".noti-in");
     elements.forEach((el) => observer.observe(el));
     return () => {
@@ -185,7 +185,6 @@ const Header = () => {
                 </div>
               </div>
             </div>
-
             <div className="col-lg-6 col-md-9">
               <div className="header-right">
                 {/* ENTITY SWITCHER */}
@@ -199,7 +198,6 @@ const Header = () => {
                       <img
                         src={Logo ? `${imagebaseUrl + Logo}` : "/images/projects/entity-logo.svg"}
                         alt="" />
-
                     </div>
                     <div className="entity-swtich-btn">
                       <span className="entity-dropdown-btn">
@@ -212,23 +210,49 @@ const Header = () => {
                   <div className="dropdown-menu dropdown-menu-end">
                     <div className="select-entity-list">
                       <h4 style={{ color: background }}>Select Entity</h4>
-                      <ul>
-                        {allEntity?.map((entity) => (
-                          <li key={entity?.id}>
-                            <button
-                              type="button"
-                              className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
-                                }`}
+                      {/* <ul>
+                        {allEntity?.length > 0 ? (
+                          allEntity?.map((entity) => (
+                            <li key={entity?.id}>
+                              <button
+                                type="button"
+                                className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
+                                  }`}
 
-                              onClick={() => {
-                                handleSelectEntity(entity)
-                                // dispatch(selectEntity({entity_id:entity?.id}))
-                              }}
-                            >
-                              {entity?.entity_name}
-                            </button>
+                                onClick={() => {
+                                  handleSelectEntity(entity)
+                                  // dispatch(selectEntity({entity_id:entity?.id}))
+                                }}
+                              >
+                                {entity?.entity_name}
+                              </button>
+                            </li>
+                          ))
+                        ) : (
+                          <span className="text-center block w-full">
+                            No entity found
+                          </span>
+                        )}
+                      </ul> */}
+                      <ul>
+                        {!allEntity?.length ? (
+                          <li className="text-center py-2 text-muted">
+                            No entity found
                           </li>
-                        ))}
+                        ) : (
+                          allEntity?.map((entity) => (
+                            <li key={entity?.id}>
+                              <button
+                                type="button"
+                                className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
+                                  }`}
+                                onClick={() => handleSelectEntity(entity)}
+                              >
+                                {entity?.entity_name}
+                              </button>
+                            </li>
+                          ))
+                        )}
                       </ul>
                     </div>
                   </div>
