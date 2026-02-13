@@ -105,17 +105,10 @@ const entitySlice = createSlice({
         state.list = entities;
         state.loading = false;
         const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-        console.log("savedEntity", savedEntity)
         if (savedEntity) {
           const validEntity = entities.find(e => e.id === savedEntity.id);
           state.selected = validEntity || entities[0] || null;
           state.selectedLogo = entities[0]?.logo;
-          // const primary = entities[0].entity_primary_color;
-          // const secondary = entities[0].entity_secondary_color;
-          // state.primaryColor = secondary;
-          // state.theme = primary && secondary
-          //   ? `linear-gradient(135deg, ${secondary}, #fff)`
-          //   : "";
         } else {
           state.selectedLogo = entities[0]?.logo || null;
           state.selected = entities[0] || null;

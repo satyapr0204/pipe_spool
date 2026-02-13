@@ -25,14 +25,11 @@ const Spool = () => {
   const { projectsData } = useSelector((state) => state.project);
   const [them, setThem] = useState('')
   const selected = useSelector((state) => state.entity.selected);
-  console.log("selected",selected)
   useEffect(() => {
     const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
     setThem(themColor?.entity_secondary_color)
-    // console.log("them", them?.entity_primary_color)
   }, [selected]);
   const background = them;
-  // const background = useSelector((state) => state.entity.primaryColor);
   const stages = [...new Set(spools?.map(spool => spool?.stage_name))];
   const dispatch = useDispatch()
   const itemsPerPage = 10;
@@ -62,15 +59,6 @@ const Spool = () => {
     "in_progress",
     "complete"
   ]
-
-  // const stages = [
-  //   "Fit-up",
-  //   "Welding",
-  //   "Inspection",
-  //   "Coating",
-  //   "Cutting"
-  // ]
-
   useEffect(() => {
     const spoolsData = Array.isArray(spools) ? spools : [];
     let filtered = [...spoolsData];

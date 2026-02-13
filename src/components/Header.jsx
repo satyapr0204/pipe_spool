@@ -10,10 +10,8 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
 const Header = () => {
-   const selectedEntity = useSelector((state) => state.entity.selected);
-
+  const selectedEntity = useSelector((state) => state.entity.selected);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
   const pendingReadIdsRef = useRef(new Set());
   const debounceTimerRef = useRef(null);
@@ -22,18 +20,11 @@ const Header = () => {
   const hideLogout = ["/drawing-spool"].includes(location.pathname);
   const user = JSON.parse(localStorage.getItem('user'))
   const [them, setThem] = useState('')
-
-  // console.log("selected", selected)
   useEffect(() => {
     const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
     setThem(themColor)
-    console.log("them", themColor)
   }, [selectedEntity]);
-  // const background = 
-
-  const userData = useSelector((state) => state.authuser)
   const background = them
-  //  useSelector((state) => state.entity.primaryColor);
   const notifications = useSelector(state => state.entity.notifications)
   const selected = useSelector(state => state.entity.selected)
   const Logo = useSelector((state) => state.entity.selectedLogo);
@@ -76,6 +67,7 @@ const Header = () => {
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData) return;
     if (selected?.id && !hideHeader) {
+      console.log("Hello here userData", selected, " hideHeader", hideHeader)
       dispatch(selectEntity({ entity_id: selected.id }));
     }
   }, [selected?.id, dispatch]);
@@ -111,8 +103,9 @@ const Header = () => {
     }
 
     dispatch(setEntity(entityToSelect));
-    setSelectedEntity(entityToSelect)
+    // setSelectedEntity(entityToSelect)
     if (!hideHeader) {
+      console.log("Hello here selectEntity")
       dispatch(selectEntity({ entity_id: entityToSelect.id }));
     }
   }, [allEntity, selected, dispatch]);

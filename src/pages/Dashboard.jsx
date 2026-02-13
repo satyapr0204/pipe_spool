@@ -4,25 +4,17 @@ import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import Pagination from "../commanComponents/Pagination";
 import { useSelector } from "react-redux";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const Dashboard = () => {
-  // const [selectedEntity, setSelectedEntity] = useLocalStorage("selectedEntity");
   const selectedEntity = useSelector((state) => state.entity.selected);
-  console.log("selectedEntity 1111", selectedEntity?.entity_secondary_color)
   const navigate = useNavigate();
   const itemsPerPage = 10;
   const projectData = useSelector((state) => state?.entity?.project);
   const [background, setbackground] = useState('')
-  const selected = useSelector((state) => state.entity.selected);
-  // console.log("selected", selected)
   useEffect(() => {
     const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
     setbackground(themColor)
-    console.log("them", themColor)
   }, [selectedEntity]);
-  // const background = them;
-
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -33,13 +25,6 @@ const Dashboard = () => {
 
   const [search, setSearch] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
-  // useEffect(() => {
-  //   const time=setTimeout=(()=>{
-
-  //   },500)
-  //   return ()=>clearTimeout(time)
-  // }, [projects])
-
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);

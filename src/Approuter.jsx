@@ -35,8 +35,6 @@ import { Suspense, lazy } from "react";
 import AppLayout from "./components/AppLayout";
 import Login from "./pages/Login";
 
-// Lazy load pages (BIG performance improvement)
-// const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Spool = lazy(() => import("./pages/Spool"));
 const DrawingSpool = lazy(() => import("./pages/DrawingSpool"));
@@ -47,10 +45,7 @@ const Approuter = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <AppLayout >
           <Routes>
-            {/* Public Route */}
             <Route path="/" element={<Login />} />
-
-            {/* Protected Layout Routes */}
             <Route >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/spool" element={<Spool />} />

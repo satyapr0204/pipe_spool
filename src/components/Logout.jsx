@@ -9,22 +9,15 @@ import { resetEntityState, setEntity } from "../redux/slice/entitySlice";
 const Logout = ({ show, handleClose }) => {
   const navigator = useNavigate()
   const dispatch = useDispatch()
-  // const background = useSelector((state) => state.entity.primaryColor);
+  const selectedEntity = useSelector((state) => state.entity.selected);
   const [them, setThem] = useState('')
 
   useEffect(() => {
-    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
-    setThem(themColor?.entity_secondary_color)
-    // console.log("them", them?.entity_primary_color)
-  }, []);
+    const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor)
+  }, [selectedEntity]);
   const background = them;
 
-  // useEffect(() => {
-  //   const token = Cookies.get("pipeSpool");
-  //   if (token) {
-  //     navigate("/dashboard");
-  //   }
-  // }, [])
   const handleLogout = () => {
     Cookies.remove("pipeSpool");
     localStorage.removeItem('user')
