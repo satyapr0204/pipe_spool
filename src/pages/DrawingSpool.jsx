@@ -445,17 +445,17 @@ const DrawingSpool = () => {
                                         )}
                                         <button
                                             type="button"
-                                            data-bs-toggle={currentStatus === "in_progress" ? undefined : "modal"}
-                                            data-bs-target={currentStatus === "in_progress" ? undefined : "#issue-info-popup"}
+                                            data-bs-toggle={currentStatus === "in_progress" || spoolDetails?.flag_status === 'open' ? undefined : "modal"}
+                                            data-bs-target={currentStatus === "in_progress" || spoolDetails?.flag_status === 'open' ? undefined : "#issue-info-popup"}
                                             onClick={() => {
-                                                if (currentStatus !== "in_progress") {
+                                                if (currentStatus !== "in_progress" || spoolDetails?.flag_status === 'open') {
                                                     setShowReportIssue(true);
                                                 }
                                             }}
-                                            disabled={currentStatus === "in_progress"}
+                                            disabled={currentStatus === "in_progress" || spoolDetails?.flag_status === 'open'}
                                             className="status-tag"
                                             style={
-                                                currentStatus === "in_progress"
+                                                currentStatus === "in_progress" || spoolDetails?.flag_status === 'open'
                                                     ? {
                                                         backgroundColor: "#ffffff",
                                                         color: "#999999",
@@ -469,7 +469,7 @@ const DrawingSpool = () => {
                                             <i
                                                 className="hgi hgi-stroke hgi-alert-01"
                                                 style={
-                                                    currentStatus === "in_progress"
+                                                    currentStatus === "in_progress" || spoolDetails?.flag_status === 'open'
                                                         ? { color: "#999999" }
                                                         : {}
                                                 }
