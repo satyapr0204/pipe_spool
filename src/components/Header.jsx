@@ -68,9 +68,9 @@ const Header = () => {
     if (!userData) return;
     if (selected?.id && !hideHeader) {
       console.log("Hello here userData", selected, " hideHeader", hideHeader)
-      dispatch(selectEntity({ entity_id: selected.id }));
+      dispatch(selectEntity({ entity_id: selected?.id }));
     }
-  }, [selected?.id, dispatch]);
+  }, [selected?.id]);
 
   const handleSelectEntity = useCallback(
     (entity) => {
@@ -87,13 +87,10 @@ const Header = () => {
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
-
   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
   useEffect(() => {
     if (!allEntity || allEntity.length === 0) return;
-
     let entityToSelect;
-
     if (selected) {
       return;
     } else if (savedEntity) {
@@ -101,22 +98,13 @@ const Header = () => {
     } else {
       entityToSelect = allEntity[0];
     }
-
     dispatch(setEntity(entityToSelect));
-    // setSelectedEntity(entityToSelect)
     if (!hideHeader) {
       console.log("Hello here selectEntity")
       dispatch(selectEntity({ entity_id: entityToSelect.id }));
     }
   }, [allEntity, selected, dispatch]);
 
-
-  // useEffect(() => {
-  //   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-  //   if (savedEntity) {
-  //     dispatch(setEntity(savedEntity));
-  //   }
-  // }, []);
   const flushReadNotifications = async () => {
     const ids = Array.from(pendingReadIdsRef.current);
     if (ids.length === 0) return;

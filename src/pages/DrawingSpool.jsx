@@ -39,6 +39,7 @@ const STATUS_CONFIG = {
 };
 
 const DrawingSpool = () => {
+    const [pauseId, setPauseId] = useState(null)
     const navigate = useNavigate()
     const location = useLocation();
     const { stage_id, spool_id } = location?.state || {};
@@ -49,13 +50,12 @@ const DrawingSpool = () => {
     const { spoolDrawingDetails } = useSelector((state) => state.spools)
     const [them, setThem] = useState('')
     const selected = useSelector((state) => state.entity.selected);
+
     useEffect(() => {
         const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
         setThem(themColor?.entity_secondary_color)
-        // console.log("them", them?.entity_primary_color)
     }, [selected]);
     const background = them;
-    // const background = useSelector((state) => state.entity.primaryColor);
     const [showReportIssue, setShowReportIssue] = useState(false)
     const [spoolId, setSpoolId] = useState(null || spool_id)
     const [stageId, setStageId] = useState(null || stage_id);
@@ -127,6 +127,7 @@ const DrawingSpool = () => {
                         console.log("pauseData", pauseData?.payload?.data?.id)
                         if (pauseData?.payload?.success) {
                             localStorage.setItem('project_assign_id', pauseData?.payload?.data?.id)
+                            setPauseId(pauseData?.payload?.data?.id)
                         }
                     } else {
                         toast.error('Your task is not in progress!')
@@ -145,7 +146,6 @@ const DrawingSpool = () => {
                     }
                 }
                 await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
-
             } else {
                 console.log("You have a wronge event call")
             }
@@ -384,11 +384,12 @@ const DrawingSpool = () => {
         const project_assign_id = JSON.parse(localStorage.getItem('project_assign_id'))
         if (currentStatus === 'in_progress' || currentStatus === 'paused' && currentStatus !== 'ready_to_start') {
             await dispatch(reportTask({
-                project_assign_id: project_assign_id,
+                project_assign_id: pauseId || project_assign_id,
                 reason: reason,
             }))
             dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }))
-            localStorage.removeItem('project_assign_id')
+            localStorage.removeItem('project_assign_id');
+            setPauseId(null)
             const modalEl = document.getElementById("reported-issue-popup");
             const modalInstance = window.bootstrap?.Modal.getInstance(modalEl);
             modalInstance?.hide();

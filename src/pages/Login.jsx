@@ -11,6 +11,7 @@ import { encryptData, decryptData } from "../utils/secureStorage";
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [openPass, setOpenPass] = useState(false)
     const [user, setUser] = useState(null)
     const REMEMBER_ME_KEY = "rememberedUsers";
     const initialValues = {
@@ -57,7 +58,6 @@ const Login = () => {
             }, 1000)
         }
     };
-
 
     const formik = useFormik({
         initialValues,
@@ -146,7 +146,7 @@ const Login = () => {
                                     <div className="input-field">
                                         <label>Password</label>
                                         <input
-                                            type="password"
+                                            type={openPass ? 'text' : 'password'}
                                             name="password"
                                             placeholder="Enter your password"
                                             className="password"
@@ -154,8 +154,8 @@ const Login = () => {
                                             onChange={formik.handleChange}
                                             onBlur={formik.handleBlur}
                                         />
-                                        <div className="password-eye">
-                                            <div className="eye eye-close"></div>
+                                        <div className="password-eye" onClick={() => setOpenPass(!openPass)}>
+                                            <div className={`eye ${!openPass ? "eye-close" : 'eye-open'}`}></div>
                                         </div>
                                         {formik.touched.password && formik.errors.password && (
                                             <div className="error-text" >
