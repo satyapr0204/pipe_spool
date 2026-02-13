@@ -4,12 +4,23 @@ import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import Pagination from "../commanComponents/Pagination";
 import { useSelector } from "react-redux";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const Dashboard = () => {
+  const [selectedEntity, setSelectedEntity] = useLocalStorage("selectedEntity");
+  console.log("selectedEntity", selectedEntity)
   const navigate = useNavigate();
   const itemsPerPage = 10;
   const projectData = useSelector((state) => state?.entity?.project);
-  const background = useSelector((state) => state.entity.primaryColor);
+  const [background, setbackground] = useState('')
+  const selected = useSelector((state) => state.entity.selected);
+  // console.log("selected", selected)
+  useEffect(() => {
+    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+    setbackground(themColor?.entity_secondary_color)
+    // console.log("them", them?.entity_primary_color)
+  }, [selectedEntity]);
+  // const background = them;
 
   const [projects, setProjects] = useState([]);
 

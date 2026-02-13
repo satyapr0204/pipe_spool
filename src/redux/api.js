@@ -66,6 +66,7 @@ export const fetchSpoolsDrawingApi = (formData) => API.post('/spool_drawing', fo
 // Task  START END PAUSE RESUME
 export const startComplateTaskApi = (formData) => API.post('/start_or_complete_task', formData)
 export const pauseResumeTaskApi = (formData) => API.post('/pause_or_resume_task', formData)
+export const reportTaskApi = (formData) => API.post('/report_issue', formData)
 
 // Notification
 export const getNotification = (formData) => API.post('/get_notifications', formData)

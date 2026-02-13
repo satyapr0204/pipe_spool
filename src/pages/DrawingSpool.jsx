@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import StartPopup from '../components/StartPopup'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchSpoolsDrawing } from '../redux/slice/spoolSlice'
-import { pauseAndResumeTask, startAndComplateTask } from '../redux/slice/taskSlice'
+import { pauseAndResumeTask, reportTask, startAndComplateTask } from '../redux/slice/taskSlice'
 import { toast } from 'react-toastify'
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
@@ -47,7 +47,15 @@ const DrawingSpool = () => {
     const { state } = useLocation();
     const dispatch = useDispatch();
     const { spoolDrawingDetails } = useSelector((state) => state.spools)
-    const background = useSelector((state) => state.entity.primaryColor);
+    const [them, setThem] = useState('')
+    const selected = useSelector((state) => state.entity.selected);
+    useEffect(() => {
+        const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+        setThem(themColor?.entity_secondary_color)
+        // console.log("them", them?.entity_primary_color)
+    }, [selected]);
+    const background = them;
+    // const background = useSelector((state) => state.entity.primaryColor);
     const [showReportIssue, setShowReportIssue] = useState(false)
     const [spoolId, setSpoolId] = useState(null || spool_id)
     const [stageId, setStageId] = useState(null || stage_id);
@@ -109,13 +117,17 @@ const DrawingSpool = () => {
             } else if (eventCall === 'PAUSE' || eventCall === 'RESUME') {
                 if (eventCall === 'PAUSE') {
                     if (currentStatus === 'in_progress' && currentStatus !== 'ready_to_start') {
-                        await dispatch(pauseAndResumeTask({
+                        const pauseData = await dispatch(pauseAndResumeTask({
                             entity_id: entity_id,
                             project_id: project_id,
                             spool_id: spool_id,
                             stage_id: stage_id,
                             action_type: 'pause'
-                        }))
+                        }));
+                        console.log("pauseData", pauseData?.payload?.data?.id)
+                        if (pauseData?.payload?.success) {
+                            localStorage.setItem('project_assign_id', pauseData?.payload?.data?.id)
+                        }
                     } else {
                         toast.error('Your task is not in progress!')
                     }
@@ -132,8 +144,8 @@ const DrawingSpool = () => {
                         toast.error('Your task is already in progress!')
                     }
                 }
-                 await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
-                
+                await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+
             } else {
                 console.log("You have a wronge event call")
             }
@@ -369,15 +381,10 @@ const DrawingSpool = () => {
             toast.error("Please enter the issue description")
             return
         }
-        const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
-        const project_id = spoolDetails?.project?.id
+        const project_assign_id = JSON.parse(localStorage.getItem('project_assign_id'))
         if (currentStatus === 'in_progress' || currentStatus === 'paused' && currentStatus !== 'ready_to_start') {
-            await dispatch(pauseAndResumeTask({
-                entity_id: entity_id,
-                project_id: project_id,
-                spool_id: spoolId,
-                stage_id: stageId,
-                action_type: 'pause',
+            await dispatch(reportTask({
+                project_assign_id: project_assign_id,
                 reason: reason,
             }))
             dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }))

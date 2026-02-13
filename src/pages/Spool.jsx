@@ -23,7 +23,16 @@ const Spool = () => {
   const [projectName, setProjectName] = useState(null);
   const [selectSpool, setSelectSpool] = useState(null)
   const { projectsData } = useSelector((state) => state.project);
-  const background = useSelector((state) => state.entity.primaryColor);
+  const [them, setThem] = useState('')
+  const selected = useSelector((state) => state.entity.selected);
+  console.log("selected",selected)
+  useEffect(() => {
+    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor?.entity_secondary_color)
+    // console.log("them", them?.entity_primary_color)
+  }, [selected]);
+  const background = them;
+  // const background = useSelector((state) => state.entity.primaryColor);
   const stages = [...new Set(spools?.map(spool => spool?.stage_name))];
   const dispatch = useDispatch()
   const itemsPerPage = 10;
@@ -205,7 +214,7 @@ const Spool = () => {
                   <tbody>
 
                     {currentItems?.length > 0 ? (
-                      currentItems?.map((item,index) => (
+                      currentItems?.map((item, index) => (
                         <tr key={index}>
                           <td>
                             <div className="spool-tag" style={{

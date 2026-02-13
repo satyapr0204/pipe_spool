@@ -1,9 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 
 
 const ReportedIssuePopup = ({ handleSubmit }) => {
-    const background = useSelector((state) => state.entity.primaryColor);
+    // const background = useSelector((state) => state.entity.primaryColor);
+    const [them, setThem] = useState('')
+
+    useEffect(() => {
+        const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+        setThem(themColor?.entity_secondary_color)
+        // console.log("them", them?.entity_primary_color)
+    }, []);
+    const background = them;
     const [reportText, setReportText] = useState("")
 
     return (

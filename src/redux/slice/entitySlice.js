@@ -51,10 +51,18 @@ export const readNotification = createAsyncThunk(
     }
   }
 );
+const getInitialSelectedEntity = () => {
+  try {
+    const item = localStorage.getItem("selectedEntity");
+    return item ? JSON.parse(item) : null;
+  } catch {
+    return null;
+  }
+};
 
 const initialState = {
   list: [],
-  selected: null,
+  selected: getInitialSelectedEntity(),
   project: [],
   notifications: [],
   theme: null,
@@ -97,10 +105,17 @@ const entitySlice = createSlice({
         state.list = entities;
         state.loading = false;
         const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
+        console.log("savedEntity", savedEntity)
         if (savedEntity) {
           const validEntity = entities.find(e => e.id === savedEntity.id);
           state.selected = validEntity || entities[0] || null;
           state.selectedLogo = entities[0]?.logo;
+          // const primary = entities[0].entity_primary_color;
+          // const secondary = entities[0].entity_secondary_color;
+          // state.primaryColor = secondary;
+          // state.theme = primary && secondary
+          //   ? `linear-gradient(135deg, ${secondary}, #fff)`
+          //   : "";
         } else {
           state.selectedLogo = entities[0]?.logo || null;
           state.selected = entities[0] || null;
@@ -126,7 +141,7 @@ const entitySlice = createSlice({
         const primary = projects?.[0]?.entity?.entity_primary_color;
         const secondary = projects?.[0]?.entity?.entity_secondary_color;
         state.primaryColor = secondary;
-        state.theme = primary && secondary
+        state.theme = secondary
           ? `linear-gradient(135deg, ${secondary}, #fff)`
           : "";
         if (projects?.[0]?.entity) {
@@ -135,13 +150,10 @@ const entitySlice = createSlice({
           localStorage.setItem("selectedEntity", JSON.stringify(projects[0].entity));
         }
         state.loading = false;
-        // toast.success(action?.payload?.message)
       })
       .addCase(selectEntity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
-        // toast.error(action?.payload?.message)
-
       })
 
     builder

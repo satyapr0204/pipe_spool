@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const StartPopup = ({ type,onScan }) => {
-  const background = useSelector((state) => state.entity.primaryColor);
+const StartPopup = ({ type, onScan }) => {
+  // const background = useSelector((state) => state.entity.primaryColor);
+  const [them, setThem] = useState('')
+
+  useEffect(() => {
+    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor?.entity_secondary_color)
+    // console.log("them", them?.entity_primary_color)
+  }, []);
+  const background = them;
 
   return (
     <>

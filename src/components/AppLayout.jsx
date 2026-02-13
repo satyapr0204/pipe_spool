@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 function AppLayout({ children }) {
-  const location = useLocation()
-  const background = useSelector(
-    (state) => state.entity.theme
-  );
+  const [them, setThem] = useState('')
+  const location = useLocation();
+  useEffect(() => {
+    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor?.entity_secondary_color)
+    // console.log("them", them?.entity_primary_color)
+  }, []);
+  const background = `linear-gradient(135deg, ${them}, #fff)`
   const hidebackGround = ['/'].includes(location.pathname)
 
   return (

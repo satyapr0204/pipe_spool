@@ -19,8 +19,18 @@ const Header = () => {
   const hideLogout = ["/drawing-spool"].includes(location.pathname);
   const user = JSON.parse(localStorage.getItem('user'))
 
+  const [them, setThem] = useState('')
+
+  useEffect(() => {
+    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor?.entity_secondary_color)
+    // console.log("them", them?.entity_primary_color)
+  }, []);
+  // const background = 
+
   const userData = useSelector((state) => state.authuser)
-  const background = useSelector((state) => state.entity.primaryColor);
+  const background = them
+  //  useSelector((state) => state.entity.primaryColor);
   const notifications = useSelector(state => state.entity.notifications)
   const selected = useSelector(state => state.entity.selected)
   const Logo = useSelector((state) => state.entity.selectedLogo);
@@ -82,11 +92,8 @@ const Header = () => {
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
-
-
+  
   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
-
-  // Once allEntity is loaded
   useEffect(() => {
     if (!allEntity || allEntity.length === 0) return;
 

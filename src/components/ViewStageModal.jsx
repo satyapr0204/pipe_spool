@@ -90,7 +90,6 @@ const ViewStageModal = ({ initialId }) => {
                                                         <td>{index + 1}</td>
                                                         <td>{item?.stage_name}</td>
                                                         <td>{item?.status === "completed" ? "Done" : item?.status}</td>
-
                                                         <td>
                                                             {item?.current_status !== "-" ? (
                                                                 <div className={`status-tag ${STATUS_CONFIG[item?.current_status]?.className}`}>
