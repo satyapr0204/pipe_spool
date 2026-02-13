@@ -388,6 +388,7 @@ const DrawingSpool = () => {
                 reason: reason,
             }))
             dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }))
+            localStorage.removeItem('project_assign_id')
             const modalEl = document.getElementById("reported-issue-popup");
             const modalInstance = window.bootstrap?.Modal.getInstance(modalEl);
             modalInstance?.hide();
