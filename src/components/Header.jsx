@@ -4,11 +4,14 @@ import { getAllEntity, getNotification, readNotification, selectEntity, setEntit
 import Logout from "./Logout";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 
 const Header = () => {
+   const selectedEntity = useSelector((state) => state.entity.selected);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,14 +21,14 @@ const Header = () => {
   const hideHeader = ["/spool", "/drawing-spool"].includes(location.pathname);
   const hideLogout = ["/drawing-spool"].includes(location.pathname);
   const user = JSON.parse(localStorage.getItem('user'))
-
   const [them, setThem] = useState('')
 
+  // console.log("selected", selected)
   useEffect(() => {
-    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
-    setThem(themColor?.entity_secondary_color)
-    // console.log("them", them?.entity_primary_color)
-  }, []);
+    const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
+    setThem(themColor)
+    console.log("them", themColor)
+  }, [selectedEntity]);
   // const background = 
 
   const userData = useSelector((state) => state.authuser)
@@ -92,7 +95,7 @@ const Header = () => {
   useEffect(() => {
     dispatch(getAllEntity());
   }, [hideHeader, dispatch]);
-  
+
   const savedEntity = JSON.parse(localStorage.getItem("selectedEntity"));
   useEffect(() => {
     if (!allEntity || allEntity.length === 0) return;
@@ -108,6 +111,7 @@ const Header = () => {
     }
 
     dispatch(setEntity(entityToSelect));
+    setSelectedEntity(entityToSelect)
     if (!hideHeader) {
       dispatch(selectEntity({ entity_id: entityToSelect.id }));
     }

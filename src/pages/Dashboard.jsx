@@ -7,8 +7,9 @@ import { useSelector } from "react-redux";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
 const Dashboard = () => {
-  const [selectedEntity, setSelectedEntity] = useLocalStorage("selectedEntity");
-  console.log("selectedEntity", selectedEntity)
+  // const [selectedEntity, setSelectedEntity] = useLocalStorage("selectedEntity");
+  const selectedEntity = useSelector((state) => state.entity.selected);
+  console.log("selectedEntity 1111", selectedEntity?.entity_secondary_color)
   const navigate = useNavigate();
   const itemsPerPage = 10;
   const projectData = useSelector((state) => state?.entity?.project);
@@ -16,9 +17,9 @@ const Dashboard = () => {
   const selected = useSelector((state) => state.entity.selected);
   // console.log("selected", selected)
   useEffect(() => {
-    const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
-    setbackground(themColor?.entity_secondary_color)
-    // console.log("them", them?.entity_primary_color)
+    const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
+    setbackground(themColor)
+    console.log("them", themColor)
   }, [selectedEntity]);
   // const background = them;
 
