@@ -111,6 +111,7 @@ const Header = () => {
 
     try {
       await dispatch(readNotification({ notification_id: ids }))
+      await dispatch(getNotification())
       setNotification((prev) =>
         prev.map((item) =>
           ids.includes(String(item.id))
