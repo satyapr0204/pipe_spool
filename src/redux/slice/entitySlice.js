@@ -62,7 +62,8 @@ const getInitialSelectedEntity = () => {
 
 const initialState = {
   list: [],
-  selected: getInitialSelectedEntity(),
+  // selected: getInitialSelectedEntity(),
+  selected: null,
   project: [],
   notifications: [],
   theme: null,
