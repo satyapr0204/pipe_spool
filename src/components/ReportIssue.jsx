@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
 
 const ReportIssue = ({ issueReason }) => {
     // const background = useSelector((state) => state.entity.primaryColor);
@@ -10,6 +9,7 @@ const ReportIssue = ({ issueReason }) => {
         // console.log("them", them?.entity_primary_color)
     }, []);
     const background = them;
+    
     return (
         <>
             <div className="modal fade other-popup" id="reported-issue-popup" tabIndex="-1" aria-hidden="true">
@@ -44,4 +44,4 @@ const ReportIssue = ({ issueReason }) => {
     )
 }
 
-export default React.memo(ReportIssue)
+export default ReportIssue

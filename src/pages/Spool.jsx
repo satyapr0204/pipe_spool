@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { spoolData } from "../assets/data.json";
 import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import ReportIssue from "../components/ReportIssue";
@@ -8,32 +7,45 @@ import Pagination from "../commanComponents/Pagination";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { spoolByProject } from "../redux/slice/projectSlice";
+import { toast } from "react-toastify";
+
+ const status = [
+    "ready_to_start",
+    "paused",
+    "in_progress",
+    "complete"
+  ]
 
 const Spool = () => {
-  const [pId, setPid] = useState(null)
-  const { state } = useLocation();
   const navigate = useNavigate()
+  const { state } = useLocation();
+  const dispatch = useDispatch()
+
+  const itemsPerPage = 10;
+
+  const selected = useSelector((state) => state.entity.selected);
+  const { projectsData } = useSelector((state) => state.project);
+
+  const [pId, setPid] = useState(null)
   const [spools, setSpools] = useState([]);
   const [filteredSpools, setFilteredSpools] = useState([]);
   const [currentPage, setCurrentPage] = useState(1)
-  const [flagText, setFlagText] = useState(null);
+  const [flagText, setFlagText] = useState("");
   const [selectStatus, setSelectStatus] = useState("");
-  const [selectStage, setSelectStage] = useState("");
+  const [selectStage, setSelectStage] = useState(null);
   const [isflagged, setIsFlagged] = useState(false);
   const [projectName, setProjectName] = useState(null);
   const [selectSpool, setSelectSpool] = useState(null)
-  const { projectsData } = useSelector((state) => state.project);
   const [them, setThem] = useState('')
-  const selected = useSelector((state) => state.entity.selected);
+
   useEffect(() => {
     const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
     setThem(themColor?.entity_secondary_color)
   }, [selected]);
   const background = them;
-  const stages = [...new Set(spools?.map(spool => spool?.stage_name))];
-  const dispatch = useDispatch()
-  const itemsPerPage = 10;
 
+  const stages = [...new Set(spools?.map(spool => spool?.stage_name))];
+ 
   useEffect(() => {
     if (state?.id) {
       setPid(state.id);
@@ -53,12 +65,7 @@ const Spool = () => {
     }
   }, [projectsData])
 
-  const status = [
-    "ready_to_start",
-    "paused",
-    "in_progress",
-    "complete"
-  ]
+ 
   useEffect(() => {
     const spoolsData = Array.isArray(spools) ? spools : [];
     let filtered = [...spoolsData];
@@ -96,11 +103,24 @@ const Spool = () => {
     setSelectSpool(id)
   }
 
+  const handlenext = (item) => {
+
+  if (item?.status === "all_completed") {
+    toast.error("This spool is already completed. Please choose another spool.");
+    return;
+  }
+
+  navigate("/drawing-spool", {
+    state: {
+      spool_id: item?.spool_id,
+      stage_id: item?.stage_id,
+    },
+  });
+ };
 
   const totalItems = filteredSpools?.length;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredSpools.slice(startIndex, startIndex + itemsPerPage);
-
 
   return (
     <>
@@ -156,7 +176,7 @@ const Spool = () => {
 
 
                     <select
-                      value={selectStage}
+                      value={selectStage??""}
                       onChange={(e) => setSelectStage(e.target.value)}
                     >
                       <option value="">Stages</option>
@@ -211,9 +231,9 @@ const Spool = () => {
                               {item?.spool_number || "SP-2024-001"}
                             </div>
                           </td>
-                          <td>{item?.stage_name || "Welding"}</td>
+                          <td>{item?.stage_name || "-"}</td>
                           <td>
-                            {item?.status === "ready_to_start" && (
+                            {item?.status === "ready_to_start"  && (
                               <div className="status-tag start">
                                 <i className="hgi hgi-stroke hgi-play"></i>
                                 Ready to Start
@@ -234,7 +254,7 @@ const Spool = () => {
                               </div>
                             )}
 
-                            {item?.status === "complete" && (
+                            {item?.status === "complete"|| item?.status === "all_completed" && (
                               <div className="status-tag completed">
                                 <i className="hgi hgi-stroke hgi-checkmark-circle-01"></i>
                                 Completed
@@ -242,7 +262,7 @@ const Spool = () => {
                             )}
                           </td>
                           <td>
-                            {item?.flag_status !== null ? (
+                            {item?.flag_status !== null && item?.status !=="all_completed"  ? (
                               <div className="status-tag flagged">
                                 <i className="hgi hgi-stroke hgi-flag-02"></i>
                                 Flagged
@@ -252,7 +272,8 @@ const Spool = () => {
                             )}
                           </td>
                           <td>
-                            {item?.flag_reason !== null ? (
+
+                            {item?.flag_reason !== null && item?.status !=="all_completed"? (
                               <a
                                 type="button"
                                 data-bs-toggle="modal"
@@ -281,16 +302,17 @@ const Spool = () => {
                               >
                                 View Stages
                               </button>
-                              <Link
-                                to="/drawing-spool"
-                                state={{
-                                  spool_id: item?.spool_id,
-                                  stage_id: item?.stage_id
-                                }}
+                              <button
+                               onClick={()=>handlenext(item)}
+                                // to="/drawing-spool"
+                                // state={{
+                                //   spool_id: item?.spool_id,
+                                //   stage_id: item?.stage_id
+                                // }}
                                 className="primary-cta"
                               >
                                 Open
-                              </Link>
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -327,4 +349,4 @@ const Spool = () => {
   );
 };
 
-export default React.memo(Spool);
+export default Spool;

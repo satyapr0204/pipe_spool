@@ -6,29 +6,32 @@ import Pagination from "../commanComponents/Pagination";
 import { useSelector } from "react-redux";
 
 const Dashboard = () => {
-  const selectedEntity = useSelector((state) => state.entity.selected);
   const navigate = useNavigate();
-  const itemsPerPage = 10;
+  const selectedEntity = useSelector((state) => state.entity.selected);
   const projectData = useSelector((state) => state?.entity?.project);
+
+  const itemsPerPage = 10;
+
   const [background, setbackground] = useState('')
-  useEffect(() => {
-    const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
-    setbackground(themColor)
-  }, [selectedEntity]);
   const [projects, setProjects] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [filteredProjects, setFilteredProjects] = useState([]);
 
   useEffect(() => {
     setProjects(projectData);
   }, [projectData]);
 
-  const [currentPage, setCurrentPage] = useState(1);
 
-  const [search, setSearch] = useState("");
-  const [filteredProjects, setFilteredProjects] = useState([]);
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
   };
+
+    useEffect(() => {
+    const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
+    setbackground(themColor)
+  }, [selectedEntity]);
 
   useEffect(() => {
     const token = Cookies.get("pipeSpool");
@@ -45,7 +48,8 @@ const Dashboard = () => {
       return;
     }
 
-    const handler = setTimeout(() => {
+ 
+  const handler = setTimeout(() => {
       const filter = projects.filter((item) =>
         item?.project_name?.toLowerCase().includes(search.toLowerCase()),
       );

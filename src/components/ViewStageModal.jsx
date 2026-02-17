@@ -28,9 +28,12 @@ const STATUS_CONFIG = {
 const ViewStageModal = ({ initialId }) => {
     const dispatch = useDispatch();
     const modalRef = useRef(null);
+
     const { spoolData } = useSelector((state) => state.spools)
     const [allStages, setAllStages] = useState([]);
     const [spools, setSpools] = useState(null)
+
+
     useEffect(() => {
         if (initialId) {
             dispatch(fetchSpools({ spool_id: initialId }))

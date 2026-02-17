@@ -2,28 +2,33 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 import { useDispatch, useSelector } from "react-redux";
 import { resetEntityState, setEntity } from "../redux/slice/entitySlice";
 
-const Logout = ({ show, handleClose }) => {
+const Logout = () => {
   const navigator = useNavigate()
   const dispatch = useDispatch()
+
   const selectedEntity = useSelector((state) => state.entity.selected);
+
   const [them, setThem] = useState('')
+  const background = them;
 
   useEffect(() => {
     const themColor = selectedEntity?.entity_secondary_color || JSON.parse(localStorage.getItem('selectedEntity'));
     setThem(themColor)
   }, [selectedEntity]);
-  const background = them;
+  
+
 
   const handleLogout = () => {
     Cookies.remove("pipeSpool");
     localStorage.removeItem('user')
     localStorage.removeItem("selectedEntity");
+
     dispatch(setEntity(null));
     toast.success("Logged out successfully");
+
     navigator('/');
     dispatch(resetEntityState())
   }

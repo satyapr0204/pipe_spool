@@ -83,7 +83,7 @@ const DrawingSpool = () => {
             const spool_id = spoolId
             const stage_id = stageId
             if (spoolDetails?.flag_status === 'open') {
-                toast.error('Your flag has opend please wait whaile flag closed by admin!');
+                toast.error('Your flag has opend please wait while flag closed by admin!');
                 return;
             }
             if (eventCall === 'START' || eventCall === 'END') {

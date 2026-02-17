@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 const StartPopup = ({ type, onScan }) => {
   // const background = useSelector((state) => state.entity.primaryColor);
