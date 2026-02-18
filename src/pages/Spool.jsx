@@ -9,12 +9,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { spoolByProject } from "../redux/slice/projectSlice";
 import { toast } from "react-toastify";
 
- const status = [
-    "ready_to_start",
-    "paused",
-    "in_progress",
-    "complete"
-  ]
+const status = [
+  "ready_to_start",
+  "paused",
+  "in_progress",
+  "all_completed"
+]
 
 const Spool = () => {
   const navigate = useNavigate()
@@ -45,7 +45,7 @@ const Spool = () => {
   const background = them;
 
   const stages = [...new Set(spools?.map(spool => spool?.stage_name))];
- 
+
   useEffect(() => {
     if (state?.id) {
       setPid(state.id);
@@ -65,7 +65,7 @@ const Spool = () => {
     }
   }, [projectsData])
 
- 
+
   useEffect(() => {
     const spoolsData = Array.isArray(spools) ? spools : [];
     let filtered = [...spoolsData];
@@ -105,18 +105,18 @@ const Spool = () => {
 
   const handlenext = (item) => {
 
-  if (item?.status === "all_completed") {
-    toast.error("This spool is already completed. Please choose another spool.");
-    return;
-  }
+    if (item?.status === "all_completed") {
+      toast.error("This spool is already completed. Please choose another spool.");
+      return;
+    }
 
-  navigate("/drawing-spool", {
-    state: {
-      spool_id: item?.spool_id,
-      stage_id: item?.stage_id,
-    },
-  });
- };
+    navigate("/drawing-spool", {
+      state: {
+        spool_id: item?.spool_id,
+        stage_id: item?.stage_id,
+      },
+    });
+  };
 
   const totalItems = filteredSpools?.length;
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -169,14 +169,14 @@ const Spool = () => {
 
                       {status.map((item, index) => (
                         <option key={index} value={item}>
-                          {formatStatus(item)}
+                          {formatStatus(item === ("all_completed" || "completed") ? "Completed" : item)}
                         </option>
                       ))}
                     </select>
 
 
                     <select
-                      value={selectStage??""}
+                      value={selectStage ?? ""}
                       onChange={(e) => setSelectStage(e.target.value)}
                     >
                       <option value="">Stages</option>
@@ -233,7 +233,7 @@ const Spool = () => {
                           </td>
                           <td>{item?.stage_name || "-"}</td>
                           <td>
-                            {item?.status === "ready_to_start"  && (
+                            {item?.status === "ready_to_start" && (
                               <div className="status-tag start">
                                 <i className="hgi hgi-stroke hgi-play"></i>
                                 Ready to Start
@@ -254,7 +254,7 @@ const Spool = () => {
                               </div>
                             )}
 
-                            {item?.status === "complete"|| item?.status === "all_completed" && (
+                            {item?.status === "complete" || item?.status === "all_completed" && (
                               <div className="status-tag completed">
                                 <i className="hgi hgi-stroke hgi-checkmark-circle-01"></i>
                                 Completed
@@ -262,7 +262,7 @@ const Spool = () => {
                             )}
                           </td>
                           <td>
-                            {item?.flag_status !== null && item?.status !=="all_completed"  ? (
+                            {item?.flag_status !== null && item?.status !== "all_completed" ? (
                               <div className="status-tag flagged">
                                 <i className="hgi hgi-stroke hgi-flag-02"></i>
                                 Flagged
@@ -273,7 +273,7 @@ const Spool = () => {
                           </td>
                           <td>
 
-                            {item?.flag_reason !== null && item?.status !=="all_completed"? (
+                            {item?.flag_reason !== null && item?.status !== "all_completed" ? (
                               <a
                                 type="button"
                                 data-bs-toggle="modal"
@@ -303,7 +303,7 @@ const Spool = () => {
                                 View Stages
                               </button>
                               <button
-                               onClick={()=>handlenext(item)}
+                                onClick={() => handlenext(item)}
                                 // to="/drawing-spool"
                                 // state={{
                                 //   spool_id: item?.spool_id,
