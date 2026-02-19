@@ -82,9 +82,11 @@ const Spool = () => {
       );
     }
     if (isflagged) {
-      filtered = filtered.filter(item =>
-        item?.flag_status !== null
-      );
+      filtered = filtered.filter(item => {
+        const flagStatus = item?.flag_status;
+        return flagStatus !== null && flagStatus !== undefined && flagStatus !== "";
+      });
+
     }
     setFilteredSpools(filtered);
     setCurrentPage(1)

@@ -77,6 +77,7 @@ const DrawingSpool = () => {
     }, []);
 
     const onScan = async (eventCall) => {
+        console.log("eventCall", eventCall)
         try {
             const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
             const project_id = spoolDetails?.project?.id
@@ -89,6 +90,7 @@ const DrawingSpool = () => {
             if (eventCall === 'START' || eventCall === 'END') {
                 if (eventCall === 'START') {
                     if (currentStatus === 'ready_to_start') {
+                        console.log("currentStatus", currentStatus)
                         await dispatch(startAndComplateTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -102,6 +104,7 @@ const DrawingSpool = () => {
                 }
                 else {
                     if (currentStatus === 'in_progress') {
+                        console.log("currentStatus", currentStatus)
                         await dispatch(startAndComplateTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -113,10 +116,14 @@ const DrawingSpool = () => {
                         toast.error('Your task is not in progress!')
                     }
                 }
-                await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+                const data = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+                if (data?.payload?.data?.stage_barcode?.stage_status === 'completed') {
+                    navigate(-1)
+                }
             } else if (eventCall === 'PAUSE' || eventCall === 'RESUME') {
                 if (eventCall === 'PAUSE') {
                     if (currentStatus === 'in_progress' && currentStatus !== 'ready_to_start') {
+                        console.log("currentStatus", currentStatus)
                         const pauseData = await dispatch(pauseAndResumeTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -134,6 +141,7 @@ const DrawingSpool = () => {
                     }
                 } else {
                     if (currentStatus === 'paused') {
+                        console.log("currentStatus", currentStatus)
                         await dispatch(pauseAndResumeTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -145,7 +153,10 @@ const DrawingSpool = () => {
                         toast.error('Your task is already in progress!')
                     }
                 }
-                await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+                const data = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+                if (data?.payload?.data?.stage_barcode?.stage_status === 'completed') {
+                    navigate(-1)
+                }
             } else {
                 console.log("You have a wronge event call")
             }
@@ -179,11 +190,14 @@ const DrawingSpool = () => {
 
     useEffect(() => {
         if (spoolDrawingDetails) {
+            console.log("spoolDrawingDetails", spoolDrawingDetails)
             setSpoolDetails(spoolDrawingDetails)
-        }
-        if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
-            navigate(-1)
-        }
+        };
+        // setTimeout(() => {
+        //     if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+        //         navigate(-1)
+        //     }
+        // }, 1000)
     }, [spoolDrawingDetails])
 
     const currentStatus =
@@ -217,53 +231,178 @@ const DrawingSpool = () => {
     //     };
     // }, [onScan]);
 
+    // Barcode Scanner
+
+    // useEffect(() => {
+    //     const inputEl = scannerInputRef.current;
+    //     if (!inputEl) return;
+
+    //     const handleKeyDown = async (e) => {
+    //         if (e.key !== "Enter") return;
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         console.log("e", e)
+    //         const scannedCodeData = e.target.value.trim();
+    //         console.log("scannedCodeData", scannedCodeData)
+    //         if (!scannedCodeData) return;
+    //         const action = getActionFromBarcode(scannedCodeData);
+    //         console.log("action", action)
+    //         await onScan(action);
+    //         e.target.value = "";
+    //     };
+
+    //     // const handleBlur = () => {
+    //     //     setTimeout(() => {
+    //     //         inputEl.focus();
+    //     //     }, 0);
+    //     // };
+    //     const handleBlur = () => {
+    //         setTimeout(() => {
+    //             const modalOpen = document.querySelector(".modal.show");
+    //             if (modalOpen) return; // popup is open, don’t focus scanner
+    //             inputEl.focus();
+    //         }, 0);
+    //     };
+
+    //     inputEl.addEventListener("keydown", handleKeyDown);
+    //     inputEl.addEventListener("blur", handleBlur);
+    //     const handleModalHidden = () => {
+    //         inputEl.focus();
+    //     };
+    //     document.addEventListener("hidden.bs.modal", handleModalHidden);
+
+    //     // Initial focus
+    //     inputEl.focus();
+
+    //     return () => {
+    //         inputEl.removeEventListener("keydown", handleKeyDown);
+    //         inputEl.removeEventListener("blur", handleBlur);
+    //         document.removeEventListener("hidden.bs.modal", handleModalHidden);
+    //     };
+    // }, [onScan]);
+
     useEffect(() => {
         const inputEl = scannerInputRef.current;
+        console.log("inputEl", inputEl)
         if (!inputEl) return;
 
+        // Focus helper
+        const focusInput = () => {
+            const modalOpen = document.querySelector(".modal.show");
+            if (!modalOpen) {
+                inputEl.focus({ preventScroll: true });
+            }
+        };
         const handleKeyDown = async (e) => {
+            console.log("e", e)
             if (e.key !== "Enter") return;
+
             e.preventDefault();
             e.stopPropagation();
 
-            const scannedCodeData = e.target.value.trim();
+            const scannedCodeData = inputEl.value.trim();
+            console.log("Scanned Barcode:", scannedCodeData);
             if (!scannedCodeData) return;
 
-            const action = getActionFromBarcode(scannedCodeData);
-            await onScan(action);
+            try {
+                const action = getActionFromBarcode(scannedCodeData);
+                console.log("action value:", action);
+                await onScan(action);
+            } catch (err) {
+                console.error("Scan error:", err);
+            }
 
-            e.target.value = "";
+            inputEl.value = ""; // clear after scan
+            focusInput();       // refocus
         };
 
-        // const handleBlur = () => {
-        //     setTimeout(() => {
-        //         inputEl.focus();
-        //     }, 0);
-        // };
+        // 🔹 Refocus if blur
         const handleBlur = () => {
             setTimeout(() => {
-                const modalOpen = document.querySelector(".modal.show");
-                if (modalOpen) return; // popup is open, don’t focus scanner
-                inputEl.focus();
+                focusInput();
             }, 0);
         };
 
+        // 🔹 Refocus when tab visible
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                focusInput();
+            }
+        };
+
+        // 🔹 Refocus when window regains focus
+        const handleWindowFocus = () => {
+            focusInput();
+        };
+
+        // 🔹 Refocus after bootstrap modal closes
+        const handleModalHidden = () => {
+            focusInput();
+        };
+
+        // Attach listeners
         inputEl.addEventListener("keydown", handleKeyDown);
         inputEl.addEventListener("blur", handleBlur);
-        const handleModalHidden = () => {
-            inputEl.focus();
-        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("focus", handleWindowFocus);
         document.addEventListener("hidden.bs.modal", handleModalHidden);
 
         // Initial focus
-        inputEl.focus();
+        focusInput();
 
         return () => {
             inputEl.removeEventListener("keydown", handleKeyDown);
             inputEl.removeEventListener("blur", handleBlur);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("focus", handleWindowFocus);
             document.removeEventListener("hidden.bs.modal", handleModalHidden);
         };
     }, [onScan]);
+
+
+    // useEffect(() => {
+    //     let buffer = "";
+    //     let timeout = null;
+
+    //     const handleKeyDown = async (e) => {
+    //         // Ignore typing in inputs, textareas, modals
+    //         console.log("e", e)
+    //         const activeEl = document.activeElement;
+    //         console.log("activeEl", activeEl)
+    //         if (
+    //             activeEl &&
+    //             (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA")
+    //         ) return;
+
+    //         if (timeout) clearTimeout(timeout);
+
+    //         if (e.key === "Enter") {
+    //             if (!buffer) return;
+
+    //             const scannedCode = buffer.trim();
+    //             buffer = "";
+
+    //             const action = getActionFromBarcode(scannedCode);
+    //             await onScan(action);
+    //             return;
+    //         }
+
+    //         buffer += e.key;
+
+    //         timeout = setTimeout(() => {
+    //             buffer = "";
+    //         }, 50);
+    //     };
+
+    //     document.addEventListener("keydown", handleKeyDown);
+
+    //     return () => {
+    //         document.removeEventListener("keydown", handleKeyDown);
+    //     };
+    // }, [onScan]);
+
+
+
 
     // useEffect(() => {
     //     const handleUnload = () => {

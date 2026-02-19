@@ -9,6 +9,8 @@ import {
 } from "../redux/slice/entitySlice";
 import Logout from "./Logout";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { fetchSpoolsDrawing } from "../redux/slice/spoolSlice";
+import { toast } from "react-toastify";
 
 
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
@@ -16,7 +18,7 @@ const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
 const Header = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-
+  const navigate = useNavigate()
   const pendingReadIdsRef = useRef(new Set());
   const debounceTimerRef = useRef(null);
 
@@ -81,7 +83,7 @@ const Header = () => {
     }
   }, [selected?.id]);
 
-  const handleSelectEntity =(entity) => {
+  const handleSelectEntity = (entity) => {
     if (!entity) return;
 
     if (!selected || selected.id !== entity.id) {
@@ -167,6 +169,42 @@ const Header = () => {
     };
   }, [notification]);
 
+
+  const handleSpoolClick = async (item, e) => {
+    e.preventDefault();
+
+    const spoolId = item?.spool_id;
+    const stageId = item?.stage_id;
+
+    if (!spoolId || !stageId) return;
+
+    try {
+      const response = await dispatch(
+        fetchSpoolsDrawing({
+          spool_id: spoolId,
+          stage_id: stageId,
+        })
+      ).unwrap();
+
+      // console.log("API Response:", response?.data?.stage_barcode?.stage_status);
+
+      if (response?.data?.stage_barcode?.stage_status === "completed") {
+        toast.error("This spool is already completed.")
+        return;
+      }
+
+      navigate("/drawing-spool", {
+        state: {
+          stage_id: stageId,
+          spool_id: spoolId,
+        },
+      });
+
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <>
       <header>
@@ -226,9 +264,8 @@ const Header = () => {
                               <li key={entity?.id}>
                                 <button
                                   type="button"
-                                  className={`dropdown-item ${
-                                    selected?.id === entity?.id ? "active" : ""
-                                  }`}
+                                  className={`dropdown-item ${selected?.id === entity?.id ? "active" : ""
+                                    }`}
                                   onClick={() => handleSelectEntity(entity)}
                                 >
                                   {entity?.entity_name}
@@ -273,7 +310,7 @@ const Header = () => {
                                   data-id={item?.id}
                                   key={item?.id}
                                 >
-                                  <Link
+                                  {/* <Link
                                     to="/drawing-spool"
                                     data-id={item?.id}
                                     state={{
@@ -298,7 +335,33 @@ const Header = () => {
                                     <p>
                                       <b>Admin reply:</b> {item?.message}
                                     </p>
+                                  </Link> */}
+                                  <Link
+                                    to="/drawing-spool"
+                                    state={{
+                                      stage_id: item?.stage_id,
+                                      spool_id: item?.spool_id,
+                                    }}
+                                    data-id={item?.id}
+                                    data-is-read={item?.is_read}
+                                    style={{
+                                      fontWeight: item?.isUnread ? "bold" : "normal",
+                                    }}
+                                    onClick={(e) => handleSpoolClick(item, e)}
+                                  >
+                                    <h3>
+                                      {item?.get_spool?.spool_number}
+                                      {item?.is_read === 0 && <span></span>}
+                                      <b>{timeAgo(item.created_at)}</b>
+                                    </h3>
+
+                                    <p>{item?.get_project?.project_name}</p>
+
+                                    <p>
+                                      <b>Admin reply:</b> {item?.message}
+                                    </p>
                                   </Link>
+
                                 </div>
                               ))}
                             </div>
