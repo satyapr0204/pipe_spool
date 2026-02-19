@@ -118,7 +118,7 @@ const DrawingSpool = () => {
                 }
                 const data = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
                 if (data?.payload?.data?.stage_barcode?.stage_status === 'completed') {
-                    navigate(-1)
+                    // navigate(-1)
                 }
             } else if (eventCall === 'PAUSE' || eventCall === 'RESUME') {
                 if (eventCall === 'PAUSE') {
@@ -155,7 +155,7 @@ const DrawingSpool = () => {
                 }
                 const data = await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
                 if (data?.payload?.data?.stage_barcode?.stage_status === 'completed') {
-                    navigate(-1)
+                    // navigate(-1)
                 }
             } else {
                 console.log("You have a wronge event call")
@@ -193,15 +193,22 @@ const DrawingSpool = () => {
             console.log("spoolDrawingDetails", spoolDrawingDetails)
             setSpoolDetails(spoolDrawingDetails)
         };
-        // setTimeout(() => {
-        //     if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
-        //         navigate(-1)
-        //     }
-        // }, 1000)
+        setTimeout(() => {
+            handleRediract()
+        }, 3000)
+        // if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+        //     navigate(-1)
+        // }
     }, [spoolDrawingDetails])
 
     const currentStatus =
         spoolDetails?.stage_barcode?.stage_status;
+
+    const handleRediract = () => {
+        if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+            navigate(-1)
+        }
+    }
 
     // useEffect(() => {
     //     const inputEl = scannerInputRef.current;
@@ -293,30 +300,103 @@ const DrawingSpool = () => {
                 inputEl.focus({ preventScroll: true });
             }
         };
+        let isProcessing = false;
+        // const handleKeyDown = async (e) => {
+        //     console.log("e", e)
+        //     // if (e.key !== "Enter") return;
+        //     if (e.key !== "Enter" && e.key !== " ") return;
+        //     if (isProcessing) return;
+
+        //     e.preventDefault();
+        //     e.stopPropagation();
+
+        //     isProcessing = true;
+        //     const scannedCodeData = inputEl.value.trim();
+        //     console.log("Scanned Barcode:", scannedCodeData);
+        //     if (!scannedCodeData) return;
+
+        //     try {
+        //         const action = getActionFromBarcode(scannedCodeData);
+        //         console.log("action value:", action);
+        //         await onScan(action);
+        //     } catch (err) {
+        //         console.error("Scan error:", err);
+        //     }
+
+        //     inputEl.value = ""; // clear after scan
+        //     focusInput();       // refocus
+        // };
+
+        // 🔹 Refocus if blur
+
+        // let isProcessing = false;
+
+        // const handleKeyDown = async (e) => {
+        //     if (e.key !== "Enter" && e.key !== " ") return;
+        //     if (isProcessing) return;
+
+        //     isProcessing = true;
+
+        //     e.preventDefault();
+        //     e.stopPropagation();
+
+        //     const scannedCodeData = inputEl.value.trim();
+        //     if (!scannedCodeData) {
+        //         isProcessing = false;
+        //         return;
+        //     }
+
+        //     try {
+        //         const action = getActionFromBarcode(scannedCodeData);
+        //         await onScan(action);
+        //     } catch (err) {
+        //         console.error("Scan error:", err);
+        //     }
+
+        //     inputEl.value = "";
+        //     focusInput();
+
+        //     // Small delay before allowing next scan
+        //     setTimeout(() => {
+        //         isProcessing = false;
+        //     }, 100);
+        // };
+
+
+        let scanLock = false;
+
         const handleKeyDown = async (e) => {
-            console.log("e", e)
-            if (e.key !== "Enter") return;
+            if (e.repeat) return;
+            if (e.key !== "Enter" && e.key !== " ") return;
+            if (scanLock) return;
+
+            scanLock = true;
 
             e.preventDefault();
             e.stopPropagation();
 
             const scannedCodeData = inputEl.value.trim();
-            console.log("Scanned Barcode:", scannedCodeData);
-            if (!scannedCodeData) return;
+            if (!scannedCodeData) {
+                scanLock = false;
+                return;
+            }
 
             try {
                 const action = getActionFromBarcode(scannedCodeData);
-                console.log("action value:", action);
                 await onScan(action);
             } catch (err) {
-                console.error("Scan error:", err);
+                console.error(err);
             }
 
-            inputEl.value = ""; // clear after scan
-            focusInput();       // refocus
+            inputEl.value = "";
+
+            setTimeout(() => {
+                scanLock = false;
+                focusInput();
+            }, 150);
         };
 
-        // 🔹 Refocus if blur
+
         const handleBlur = () => {
             setTimeout(() => {
                 focusInput();
