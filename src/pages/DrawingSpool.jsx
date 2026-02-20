@@ -453,6 +453,7 @@ const DrawingSpool = () => {
         let scanTimeout = null;
 
         const handleKeyDown = async (e) => {
+            if (!e.key) return;
             console.log("e", e)
             const currentTime = Date.now();
             const timeDiff = currentTime - lastKeyTime;
