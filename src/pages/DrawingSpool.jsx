@@ -288,154 +288,225 @@ const DrawingSpool = () => {
     //     };
     // }, [onScan]);
 
+    // useEffect(() => {
+    //     const inputEl = scannerInputRef.current;
+    //     console.log("inputEl", inputEl)
+    //     if (!inputEl) return;
+
+    //     // Focus helper
+    //     const focusInput = () => {
+    //         const modalOpen = document.querySelector(".modal.show");
+    //         if (!modalOpen) {
+    //             inputEl.focus({ preventScroll: true });
+    //         }
+    //     };
+    //     let isProcessing = false;
+    //     // const handleKeyDown = async (e) => {
+    //     //     console.log("e", e)
+    //     //     // if (e.key !== "Enter") return;
+    //     //     if (e.key !== "Enter" && e.key !== " ") return;
+    //     //     if (isProcessing) return;
+
+    //     //     e.preventDefault();
+    //     //     e.stopPropagation();
+
+    //     //     isProcessing = true;
+    //     //     const scannedCodeData = inputEl.value.trim();
+    //     //     console.log("Scanned Barcode:", scannedCodeData);
+    //     //     if (!scannedCodeData) return;
+
+    //     //     try {
+    //     //         const action = getActionFromBarcode(scannedCodeData);
+    //     //         console.log("action value:", action);
+    //     //         await onScan(action);
+    //     //     } catch (err) {
+    //     //         console.error("Scan error:", err);
+    //     //     }
+
+    //     //     inputEl.value = ""; // clear after scan
+    //     //     focusInput();       // refocus
+    //     // };
+
+    //     // 🔹 Refocus if blur
+
+    //     // let isProcessing = false;
+
+    //     // const handleKeyDown = async (e) => {
+    //     //     if (e.key !== "Enter" && e.key !== " ") return;
+    //     //     if (isProcessing) return;
+
+    //     //     isProcessing = true;
+
+    //     //     e.preventDefault();
+    //     //     e.stopPropagation();
+
+    //     //     const scannedCodeData = inputEl.value.trim();
+    //     //     if (!scannedCodeData) {
+    //     //         isProcessing = false;
+    //     //         return;
+    //     //     }
+
+    //     //     try {
+    //     //         const action = getActionFromBarcode(scannedCodeData);
+    //     //         await onScan(action);
+    //     //     } catch (err) {
+    //     //         console.error("Scan error:", err);
+    //     //     }
+
+    //     //     inputEl.value = "";
+    //     //     focusInput();
+
+    //     //     // Small delay before allowing next scan
+    //     //     setTimeout(() => {
+    //     //         isProcessing = false;
+    //     //     }, 100);
+    //     // };
+
+
+    //     let scanLock = false;
+
+    //     const handleKeyDown = async (e) => {
+    //         console.log("e", e)
+    //         if (e.repeat) return;
+    //         if (e.key !== "Enter" && e.key !== " ") return;
+    //         if (scanLock) return;
+
+    //         scanLock = true;
+
+    //         e.preventDefault();
+    //         e.stopPropagation();
+
+    //         const scannedCodeData = inputEl.value.trim();
+    //         console.log("scannedCodeData", scannedCodeData)
+    //         if (!scannedCodeData) {
+    //             scanLock = false;
+    //             return;
+    //         }
+
+    //         try {
+    //             const action = getActionFromBarcode(scannedCodeData);
+    //             console.log("action", action)
+    //             await onScan(action);
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+
+    //         inputEl.value = "";
+
+    //         setTimeout(() => {
+    //             scanLock = false;
+    //             focusInput();
+    //         }, 150);
+    //     };
+
+
+    //     const handleBlur = () => {
+    //         setTimeout(() => {
+    //             focusInput();
+    //         }, 0);
+    //     };
+
+    //     // 🔹 Refocus when tab visible
+    //     const handleVisibilityChange = () => {
+    //         if (!document.hidden) {
+    //             focusInput();
+    //         }
+    //     };
+
+    //     // 🔹 Refocus when window regains focus
+    //     const handleWindowFocus = () => {
+    //         focusInput();
+    //     };
+
+    //     // 🔹 Refocus after bootstrap modal closes
+    //     const handleModalHidden = () => {
+    //         focusInput();
+    //     };
+
+    //     // Attach listeners
+    //     inputEl.addEventListener("keydown", handleKeyDown);
+    //     inputEl.addEventListener("blur", handleBlur);
+    //     document.addEventListener("visibilitychange", handleVisibilityChange);
+    //     window.addEventListener("focus", handleWindowFocus);
+    //     document.addEventListener("hidden.bs.modal", handleModalHidden);
+
+    //     // Initial focus
+    //     focusInput();
+
+    //     return () => {
+    //         inputEl.removeEventListener("keydown", handleKeyDown);
+    //         inputEl.removeEventListener("blur", handleBlur);
+    //         document.removeEventListener("visibilitychange", handleVisibilityChange);
+    //         window.removeEventListener("focus", handleWindowFocus);
+    //         document.removeEventListener("hidden.bs.modal", handleModalHidden);
+    //     };
+    // }, [onScan]);
+
     useEffect(() => {
-        const inputEl = scannerInputRef.current;
-        console.log("inputEl", inputEl)
-        if (!inputEl) return;
-
-        // Focus helper
-        const focusInput = () => {
-            const modalOpen = document.querySelector(".modal.show");
-            if (!modalOpen) {
-                inputEl.focus({ preventScroll: true });
-            }
-        };
-        let isProcessing = false;
-        // const handleKeyDown = async (e) => {
-        //     console.log("e", e)
-        //     // if (e.key !== "Enter") return;
-        //     if (e.key !== "Enter" && e.key !== " ") return;
-        //     if (isProcessing) return;
-
-        //     e.preventDefault();
-        //     e.stopPropagation();
-
-        //     isProcessing = true;
-        //     const scannedCodeData = inputEl.value.trim();
-        //     console.log("Scanned Barcode:", scannedCodeData);
-        //     if (!scannedCodeData) return;
-
-        //     try {
-        //         const action = getActionFromBarcode(scannedCodeData);
-        //         console.log("action value:", action);
-        //         await onScan(action);
-        //     } catch (err) {
-        //         console.error("Scan error:", err);
-        //     }
-
-        //     inputEl.value = ""; // clear after scan
-        //     focusInput();       // refocus
-        // };
-
-        // 🔹 Refocus if blur
-
-        // let isProcessing = false;
-
-        // const handleKeyDown = async (e) => {
-        //     if (e.key !== "Enter" && e.key !== " ") return;
-        //     if (isProcessing) return;
-
-        //     isProcessing = true;
-
-        //     e.preventDefault();
-        //     e.stopPropagation();
-
-        //     const scannedCodeData = inputEl.value.trim();
-        //     if (!scannedCodeData) {
-        //         isProcessing = false;
-        //         return;
-        //     }
-
-        //     try {
-        //         const action = getActionFromBarcode(scannedCodeData);
-        //         await onScan(action);
-        //     } catch (err) {
-        //         console.error("Scan error:", err);
-        //     }
-
-        //     inputEl.value = "";
-        //     focusInput();
-
-        //     // Small delay before allowing next scan
-        //     setTimeout(() => {
-        //         isProcessing = false;
-        //     }, 100);
-        // };
-
-
+        let buffer = "";
+        let lastKeyTime = 0;
         let scanLock = false;
+        const SCAN_SPEED_THRESHOLD = 50;
+        const SCAN_COMPLETE_DELAY = 100;
+        const MIN_BARCODE_LENGTH = 3; // 🔥 important
+
+        let scanTimeout = null;
 
         const handleKeyDown = async (e) => {
-            if (e.repeat) return;
-            if (e.key !== "Enter" && e.key !== " ") return;
-            if (scanLock) return;
+            console.log("e", e)
+            const currentTime = Date.now();
+            const timeDiff = currentTime - lastKeyTime;
+            lastKeyTime = currentTime;
 
-            scanLock = true;
+            // Ignore modifier keys
+            if (["Shift", "Control", "Alt", "Meta"].includes(e.key)) return;
 
-            e.preventDefault();
-            e.stopPropagation();
-
-            const scannedCodeData = inputEl.value.trim();
-            if (!scannedCodeData) {
-                scanLock = false;
-                return;
+            // Reset buffer if typing too slow (human typing)
+            if (timeDiff > SCAN_SPEED_THRESHOLD) {
+                buffer = "";
             }
 
-            try {
-                const action = getActionFromBarcode(scannedCodeData);
-                await onScan(action);
-            } catch (err) {
-                console.error(err);
+            // Do NOT collect Enter
+            if (e.key !== "Enter") {
+                buffer += e.key;
             }
 
-            inputEl.value = "";
+            if (scanTimeout) clearTimeout(scanTimeout);
 
-            setTimeout(() => {
-                scanLock = false;
-                focusInput();
-            }, 150);
+            scanTimeout = setTimeout(async () => {
+                const cleaned = buffer.trim();
+                console.log("cleaned", cleaned)
+                buffer = "";
+
+                // ✅ Ignore empty or too short values
+                if (!cleaned || cleaned.length < MIN_BARCODE_LENGTH) {
+                    return;
+                }
+
+                if (scanLock) return;
+                scanLock = true;
+
+                console.log("Scanner Detected:", cleaned);
+
+                try {
+                    const action = getActionFromBarcode(cleaned);
+                    console.log("action", action)
+                    await onScan(action);
+                } catch (err) {
+                    console.error("Scan error:", err);
+                }
+
+                setTimeout(() => {
+                    scanLock = false;
+                }, 150);
+            }, SCAN_COMPLETE_DELAY);
         };
 
-
-        const handleBlur = () => {
-            setTimeout(() => {
-                focusInput();
-            }, 0);
-        };
-
-        // 🔹 Refocus when tab visible
-        const handleVisibilityChange = () => {
-            if (!document.hidden) {
-                focusInput();
-            }
-        };
-
-        // 🔹 Refocus when window regains focus
-        const handleWindowFocus = () => {
-            focusInput();
-        };
-
-        // 🔹 Refocus after bootstrap modal closes
-        const handleModalHidden = () => {
-            focusInput();
-        };
-
-        // Attach listeners
-        inputEl.addEventListener("keydown", handleKeyDown);
-        inputEl.addEventListener("blur", handleBlur);
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-        window.addEventListener("focus", handleWindowFocus);
-        document.addEventListener("hidden.bs.modal", handleModalHidden);
-
-        // Initial focus
-        focusInput();
+        window.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            inputEl.removeEventListener("keydown", handleKeyDown);
-            inputEl.removeEventListener("blur", handleBlur);
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-            window.removeEventListener("focus", handleWindowFocus);
-            document.removeEventListener("hidden.bs.modal", handleModalHidden);
+            window.removeEventListener("keydown", handleKeyDown);
+            if (scanTimeout) clearTimeout(scanTimeout);
         };
     }, [onScan]);
 
