@@ -32,11 +32,15 @@ const spoolSlice = createSlice({
     name: "spool",
     initialState: {
         spoolData: [],
-        spoolDrawingDetails: {},
+        spoolDrawingDetails: null,
         loading: false,
         error: null
     },
-    reducers: {},
+    reducers: {
+        resetSpoolDrawingDetails: (state) => {
+            state.spoolDrawingDetails = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchSpools.pending, (state) => {
@@ -72,5 +76,5 @@ const spoolSlice = createSlice({
             })
     }
 })
-
+export const { resetSpoolDrawingDetails } = spoolSlice.actions;
 export default spoolSlice.reducer;

@@ -4,7 +4,7 @@ import IssueInfoPopup from '../components/IssueInfoPopup'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import StartPopup from '../components/StartPopup'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchSpoolsDrawing } from '../redux/slice/spoolSlice'
+import { fetchSpoolsDrawing, resetSpoolDrawingDetails } from '../redux/slice/spoolSlice'
 import { pauseAndResumeTask, reportTask, startAndComplateTask } from '../redux/slice/taskSlice'
 import { toast } from 'react-toastify'
 const imagebaseUrl = import.meta.env.VITE_IMAGE_URL;
@@ -182,33 +182,53 @@ const DrawingSpool = () => {
         }
     }, [state]);
 
-    useEffect(() => {
-        if (spoolId && stageId) {
-            dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }))
-        }
-    }, [spoolId, stageId])
+    // useEffect(() => {
+    //     if (spoolId && stageId) {
+    //         dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+    //     }
+    // }, [spoolId, stageId])
 
     useEffect(() => {
-        if (spoolDrawingDetails) {
-            console.log("spoolDrawingDetails", spoolDrawingDetails)
-            setSpoolDetails(spoolDrawingDetails)
+        if (spoolId && stageId) {
+            dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+        }
+
+        return () => {
+            dispatch(resetSpoolDrawingDetails());
         };
-        setTimeout(() => {
-            handleRediract()
-        }, 3000)
-        // if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
-        //     navigate(-1)
-        // }
-    }, [spoolDrawingDetails])
+    }, [spoolId, stageId]);
+
+    // useEffect(() => {
+    //     if (spoolDrawingDetails) {
+    //         console.log("spoolDrawingDetails", spoolDrawingDetails)
+    //         setSpoolDetails(spoolDrawingDetails)
+    //     };
+    //     setTimeout(() => {
+    //         handleRediract()
+    //     }, 3000)
+    //     // if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+    //     //     navigate(-1)
+    //     // }
+    // }, [spoolDrawingDetails])
+
+    useEffect(() => {
+        if (!spoolDrawingDetails) return;
+
+        setSpoolDetails(spoolDrawingDetails);
+
+        if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+            if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
+                navigate(-1)
+            }
+        }
+
+    }, [spoolDrawingDetails]);
+
+
 
     const currentStatus =
         spoolDetails?.stage_barcode?.stage_status;
 
-    const handleRediract = () => {
-        if (spoolDrawingDetails?.stage_barcode?.stage_status === 'completed') {
-            navigate(-1)
-        }
-    }
 
     // useEffect(() => {
     //     const inputEl = scannerInputRef.current;
@@ -448,7 +468,7 @@ const DrawingSpool = () => {
         let scanLock = false;
         const SCAN_SPEED_THRESHOLD = 50;
         const SCAN_COMPLETE_DELAY = 100;
-        const MIN_BARCODE_LENGTH = 3; // 🔥 important
+        const MIN_BARCODE_LENGTH = 3;
 
         let scanTimeout = null;
 
@@ -460,7 +480,7 @@ const DrawingSpool = () => {
             lastKeyTime = currentTime;
 
             // Ignore modifier keys
-            if (["Shift", "Control", "Alt", "Meta"].includes(e.key)) return;
+            if (["Shift", "Control", "Alt"].includes(e.key)) return;
 
             // Reset buffer if typing too slow (human typing)
             if (timeDiff > SCAN_SPEED_THRESHOLD) {
@@ -491,8 +511,8 @@ const DrawingSpool = () => {
 
                 try {
                     const action = getActionFromBarcode(cleaned);
-                    console.log("action", action)
-                    await onScan(action);
+                    console.log("action", action?.toUpperCase());
+                    await onScan(action?.toUpperCase());
                 } catch (err) {
                     console.error("Scan error:", err);
                 }
