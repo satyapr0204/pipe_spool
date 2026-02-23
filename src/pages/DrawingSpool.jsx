@@ -180,7 +180,7 @@ const DrawingSpool = () => {
             setSpoolId(state?.spool_id);
             setStageId(state?.stage_id);
         } else {
-            console.log("state?.spool_id && state?.stage_id", state?.spool_id && state?.stage_id)
+            console.log("state?.spool_id && state?.stage_id", state?.spool_id, "&&", state?.stage_id)
             navigate(-1)
         }
     }, [state]);
