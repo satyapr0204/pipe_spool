@@ -49,6 +49,8 @@ const Spool = () => {
   useEffect(() => {
     if (state?.id) {
       setPid(state.id);
+    } else {
+      navigate(-1)
     }
   }, [state]);
 

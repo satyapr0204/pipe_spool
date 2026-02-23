@@ -179,6 +179,9 @@ const DrawingSpool = () => {
         if (state?.spool_id && state?.stage_id) {
             setSpoolId(state?.spool_id);
             setStageId(state?.stage_id);
+        } else {
+            console.log("state?.spool_id && state?.stage_id")
+            navigate(-1)
         }
     }, [state]);
 
@@ -192,7 +195,6 @@ const DrawingSpool = () => {
         if (spoolId && stageId) {
             dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
         }
-
         return () => {
             dispatch(resetSpoolDrawingDetails());
         };
