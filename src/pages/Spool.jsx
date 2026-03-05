@@ -176,7 +176,6 @@ const Spool = () => {
               </div>
             </div>
           </div>
-
           <div className="container">
             <div className="spools-table">
               <div className="spools-head">
@@ -203,8 +202,6 @@ const Spool = () => {
                         </option>
                       ))}
                     </select>
-
-
                     <select
                       value={selectStage ?? ""}
                       onChange={(e) => setSelectStage(e.target.value)}
@@ -250,7 +247,6 @@ const Spool = () => {
                     </tr>
                   </thead>
                   <tbody>
-
                     {currentItems?.length > 0 ? (
                       currentItems?.map((item, index) => (
                         <tr key={index}>

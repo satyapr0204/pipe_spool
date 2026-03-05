@@ -710,13 +710,11 @@ const DrawingSpool = () => {
             toast.error('You need to start a task first!')
         }
     }
-
     const handlePdfDownload = (pdf) => {
         if (!pdf) return;
         const pdfUrl = `${imagebaseUrl}${pdf}`;
         window.open(pdfUrl, "_blank", "noopener,noreferrer");
     };
-
     return (
         <>
             <div className="page-wrapper">
