@@ -373,7 +373,6 @@ const Spool = () => {
       />
       <ViewStageModal
         initialId={selectSpool}
-
       />
     </>
   );
