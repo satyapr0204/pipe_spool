@@ -36,7 +36,8 @@ const Spool = () => {
   const [isflagged, setIsFlagged] = useState(false);
   const [projectName, setProjectName] = useState(null);
   const [selectSpool, setSelectSpool] = useState(null)
-  const [them, setThem] = useState('')
+  const [them, setThem] = useState('');
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
@@ -48,6 +49,7 @@ const Spool = () => {
 
   useEffect(() => {
     if (state?.id) {
+      console.log("state", state)
       setPid(state.id);
     } else {
       navigate(-1)
@@ -71,6 +73,14 @@ const Spool = () => {
   useEffect(() => {
     const spoolsData = Array.isArray(spools) ? spools : [];
     let filtered = [...spoolsData];
+
+    if (search.trim() && search.trim().length >= 2) {
+      const term = search.trim().toLowerCase();
+      filtered = filtered.filter(item =>
+        item?.spool_number?.toLowerCase().includes(term)
+      );
+    }
+    console.log("filtered",filtered)
     if (selectStage) {
       const term = selectStage.toLowerCase();
       filtered = filtered.filter(item =>
@@ -92,7 +102,7 @@ const Spool = () => {
     }
     setFilteredSpools(filtered);
     setCurrentPage(1)
-  }, [spools, selectStage, selectStatus, isflagged]);
+  }, [spools, selectStage, selectStatus, isflagged,search]);
 
   const formatStatus = (value) =>
     value
@@ -126,6 +136,9 @@ const Spool = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredSpools.slice(startIndex, startIndex + itemsPerPage);
 
+  console.log("search",search)
+  console.log("filteredSpools",filteredSpools)
+
   return (
     <>
       <div className="page-wrapper">
@@ -141,10 +154,24 @@ const Spool = () => {
               </div>
               <div className="col-lg-6 col-md-6">
                 <div className="page-search">
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search by spool number…"
+                    className="srch-field"
+                    style={{
+                      marginRight: "10px",
+                      // marginBottom: "10"
+                    }}
+                  />
                   <Link onClick={() => navigate(-1)} className="back-cta">
-                    <img src="/images/projects/arrow-left.svg" alt="" /> Back to
+                    <img src="/images/projects/arrow-left.svg" alt="" style={{
+                      width: '13px'
+                    }} /> Back to
                     Projects
                   </Link>
+
                 </div>
               </div>
             </div>
@@ -170,7 +197,6 @@ const Spool = () => {
                       onChange={(e) => setSelectStatus(e.target.value)}
                     >
                       <option value="">Status</option>
-
                       {status.map((item, index) => (
                         <option key={index} value={item}>
                           {formatStatus(item === ("all_completed" || "completed") ? "Completed" : item)}
@@ -232,7 +258,7 @@ const Spool = () => {
                             <div className="spool-tag" style={{
                               background: background
                             }}>
-                              {item?.spool_number || "SP-2024-001"}
+                              {item?.spool_number || "-"}
                             </div>
                           </td>
                           <td>{item?.stage_name || "-"}</td>
