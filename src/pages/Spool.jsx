@@ -167,7 +167,7 @@ const Spool = () => {
                   />
                   <Link onClick={() => navigate(-1)} className="back-cta">
                     <img src="/images/projects/arrow-left.svg" alt="" style={{
-                      width: '13px'
+                      width: '11px'
                     }} /> Back to
                     Projects
                   </Link>
