@@ -71,6 +71,10 @@ const spoolSlice = createSlice({
             .addCase(fetchSpoolsDrawing.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || action.error.message;
+                // console.log("action", action?.payload?.code===404)
+                // if(action?.payload?.code===404){
+                //     Navigator()
+                // }
                 state.spoolDrawingDetails = [];
                 toast.error(action?.payload?.message)
             })

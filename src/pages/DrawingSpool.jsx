@@ -191,14 +191,33 @@ const DrawingSpool = () => {
     //     }
     // }, [spoolId, stageId])
 
+    // useEffect(() => {
+    //    
+    //         if (spoolId && stageId) {
+    //             dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+    //         }
+    //         return () => {
+    //             dispatch(resetSpoolDrawingDetails());
+    //         };
+    // }, [spoolId, stageId]);
     useEffect(() => {
+    const fetchData = async () => {
         if (spoolId && stageId) {
-            dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId }));
+            try {
+                await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId })).unwrap();
+            } catch (error) {
+                if (error?.code === 404 || error?.status === 404) {
+                    console.log("Redirecting due to 404:", error);
+                    navigate(-1); 
+                }
+            }
         }
-        return () => {
-            dispatch(resetSpoolDrawingDetails());
-        };
-    }, [spoolId, stageId]);
+    };
+    fetchData();
+    return () => {
+        dispatch(resetSpoolDrawingDetails());
+    };
+}, [spoolId, stageId, dispatch, navigate]);
 
     // useEffect(() => {
     //     if (spoolDrawingDetails) {

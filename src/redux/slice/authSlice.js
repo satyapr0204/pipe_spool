@@ -51,7 +51,7 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.userData = action?.payload?.data;
-        localStorage.setItem('user',JSON.stringify(action?.payload?.data?.user))
+        localStorage.setItem('user', JSON.stringify(action?.payload?.data?.user))
         const token = action?.payload?.data?.token;
         if (token) {
           Cookies.set("pipeSpool", token, {
@@ -67,10 +67,6 @@ const authSlice = createSlice({
         state.error = action.payload || action.error.message;
         toast.error(action?.payload?.message)
       });
-
-
-
-
   },
 });
 
