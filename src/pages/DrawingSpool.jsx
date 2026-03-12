@@ -201,23 +201,23 @@ const DrawingSpool = () => {
     //         };
     // }, [spoolId, stageId]);
     useEffect(() => {
-    const fetchData = async () => {
-        if (spoolId && stageId) {
-            try {
-                await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId })).unwrap();
-            } catch (error) {
-                if (error?.code === 404 || error?.status === 404) {
-                    console.log("Redirecting due to 404:", error);
-                    navigate(-1); 
+        const fetchData = async () => {
+            if (spoolId && stageId) {
+                try {
+                    await dispatch(fetchSpoolsDrawing({ spool_id: spoolId, stage_id: stageId })).unwrap();
+                } catch (error) {
+                    if (error?.code === 404 || error?.status === 404) {
+                        console.log("Redirecting due to 404:", error);
+                        navigate(-1);
+                    }
                 }
             }
-        }
-    };
-    fetchData();
-    return () => {
-        dispatch(resetSpoolDrawingDetails());
-    };
-}, [spoolId, stageId, dispatch, navigate]);
+        };
+        fetchData();
+        return () => {
+            dispatch(resetSpoolDrawingDetails());
+        };
+    }, [spoolId, stageId, dispatch, navigate]);
 
     // useEffect(() => {
     //     if (spoolDrawingDetails) {
@@ -748,7 +748,10 @@ const DrawingSpool = () => {
                             </div>
                             <div className="col-lg-6 col-md-6">
                                 <div className="page-search">
-                                    <Link onClick={() => navigate(-1)} className="back-cta">
+                                    <Link onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate(-1)
+                                    }} className="back-cta">
                                         <img src="/images/projects/arrow-left.svg" alt="" /> Back to Spools
                                     </Link>
                                 </div>
