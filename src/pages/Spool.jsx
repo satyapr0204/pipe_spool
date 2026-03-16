@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import ReportIssue from "../components/ReportIssue";
@@ -20,7 +20,7 @@ const Spool = () => {
   const navigate = useNavigate()
   const { state } = useLocation();
   const dispatch = useDispatch()
-
+  const closedDispatchedRef = useRef(false);
   const itemsPerPage = 10;
 
   const selected = useSelector((state) => state.entity.selected);
@@ -56,11 +56,35 @@ const Spool = () => {
     }
   }, [state]);
 
+  // useEffect(() => {
+  //   if (pId) {
+  //     dispatch(spoolByProject({ project_id: pId }))
+  //   }
+  // }, [pId])
+
   useEffect(() => {
-    if (pId) {
-      dispatch(spoolByProject({ project_id: pId }))
+  if (!pId) return;
+
+  const closedSpoolExists = filteredSpools?.some(spool => spool.flag_status === "closed");
+
+  if (closedSpoolExists) {
+    // Only dispatch once for closed spools
+    if (!closedDispatchedRef.current) {
+      closedDispatchedRef.current = true;
+      const timer = setTimeout(() => {
+        dispatch(spoolByProject({ project_id: pId }));
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
-  }, [pId])
+  } else {
+    // Reset the ref so that closed spools can trigger dispatch next time they appear
+    closedDispatchedRef.current = false;
+
+    // Normal behavior: call API immediately
+    dispatch(spoolByProject({ project_id: pId }));
+  }
+}, [pId, filteredSpools, dispatch]);
 
   useEffect(() => {
     if (projectsData) {
@@ -80,7 +104,7 @@ const Spool = () => {
         item?.spool_number?.toLowerCase().includes(term)
       );
     }
-    console.log("filtered",filtered)
+    console.log("filtered", filtered)
     if (selectStage) {
       const term = selectStage.toLowerCase();
       filtered = filtered.filter(item =>
@@ -102,7 +126,7 @@ const Spool = () => {
     }
     setFilteredSpools(filtered);
     setCurrentPage(1)
-  }, [spools, selectStage, selectStatus, isflagged,search]);
+  }, [spools, selectStage, selectStatus, isflagged, search]);
 
   const formatStatus = (value) =>
     value
@@ -136,8 +160,8 @@ const Spool = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = filteredSpools.slice(startIndex, startIndex + itemsPerPage);
 
-  console.log("search",search)
-  console.log("filteredSpools",filteredSpools)
+  console.log("search", search)
+  console.log("filteredSpools", filteredSpools)
 
   return (
     <>
@@ -165,7 +189,10 @@ const Spool = () => {
                       // marginBottom: "10"
                     }}
                   />
-                  <Link onClick={() => navigate(-1)} className="back-cta">
+                  <Link onClick={(e) => {
+                    e.preventDefault();
+                    navigate(-1)
+                  }} className="back-cta">
                     <img src="/images/projects/arrow-left.svg" alt="" style={{
                       width: '11px'
                     }} /> Back to
@@ -288,7 +315,7 @@ const Spool = () => {
                             )}
                           </td>
                           <td>
-                            {item?.flag_status !== null && item?.status !== "all_completed" ? (
+                            {(item?.flag_status !== null && item?.flag_status !== "closed") && item?.status !== "all_completed" ? (
                               <div className="status-tag flagged">
                                 <i className="hgi hgi-stroke hgi-flag-02"></i>
                                 Flagged
@@ -299,7 +326,7 @@ const Spool = () => {
                           </td>
                           <td>
 
-                            {item?.flag_reason !== null && item?.status !== "all_completed" ? (
+                            {item?.flag_reason !== null && item?.status !== "all_completed" && item.flag_status !== "closed" ? (
                               <a
                                 type="button"
                                 data-bs-toggle="modal"
