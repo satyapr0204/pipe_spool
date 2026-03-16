@@ -21,12 +21,12 @@ const Spool = () => {
   const { state } = useLocation();
   const dispatch = useDispatch()
   const closedDispatchedRef = useRef(false);
-  const timerRef=useRef(null)
+  const timerRef = useRef(null)
   const itemsPerPage = 10;
 
   const selected = useSelector((state) => state.entity.selected);
   const { projectsData } = useSelector((state) => state.project);
-
+  const projectsDataRef = useRef(projectsData);
   const [pId, setPid] = useState(null)
   const [spools, setSpools] = useState([]);
   const [filteredSpools, setFilteredSpools] = useState([]);
@@ -41,6 +41,10 @@ const Spool = () => {
   const [search, setSearch] = useState("");
 
   const flag_status = filteredSpools?.[0]?.flag_status;
+
+  useEffect(() => {
+    projectsDataRef.current = projectsData;
+  }, [projectsData]);
 
   useEffect(() => {
     const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
@@ -61,28 +65,53 @@ const Spool = () => {
 
 
 
-useEffect(() => {
-  // 1. Initial Call
-  if (pId) {
-    dispatch(spoolByProject({ project_id: pId }));
-  }
+  // useEffect(() => {
+  //   // 1. Initial Call
+  //   if (pId) {
+  //     dispatch(spoolByProject({ project_id: pId }));
+  //   }
 
-  // 2. Real-time Polling Logic
-  const interval = setInterval(() => {
-    // Check raw data from Redux, not the filtered state
-    const rawSpools = projectsData?.spools || [];
-    const isAnySpoolClosed = rawSpools.some(s => s.flag_status === "closed");
+  //   const rawSpools = projectsData?.spools || [];
+  //   const isAnySpoolClosed = rawSpools.some(s => s.flag_status === "closed");
+  //   console.log("isAnySpoolClosed", isAnySpoolClosed)
+  //   // 2. Real-time Polling Logic
+  //   const interval = setInterval(() => {
+  //     // Check raw data from Redux, not the filtered state
+  //     const rawSpools = projectsData?.spools || [];
+  //     const isAnySpoolClosed = rawSpools.some(s => s.flag_status === "closed");
+  //     console.log("isAnySpoolClosed", isAnySpoolClosed)
 
-    if (pId && isAnySpoolClosed) {
-      console.log("Admin sync: Status is closed, refreshing...");
+  //     if (pId && isAnySpoolClosed) {
+  //       console.log("Admin sync: Status is closed, refreshing...");
+  //       // dispatch(spoolByProject({ project_id: pId }));
+  //     }
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+
+  //   // We only watch pId. If we watch flag_status, it resets the timer too fast.
+  // }, [pId, dispatch]);
+
+  useEffect(() => {
+    if (pId) {
       dispatch(spoolByProject({ project_id: pId }));
     }
-  }, 5000);
+    const interval = setInterval(() => {
+      const currentData = projectsDataRef.current;
+      const rawSpools = currentData?.spools || [];
+      console.log("projectsData", projectsData)
+      const isAnySpoolOpen = rawSpools.some(s => s.flag_status !== "closed");
+      console.log("isAnySpoolOpen", isAnySpoolOpen)
+      if (pId && isAnySpoolOpen) {
+        console.log("Polling: Status is OPEN, fetching updates...");
+        dispatch(spoolByProject({ project_id: pId }));
+      } else {
+        console.log("Polling Paused: All spools are CLOSED.");
+      }
+    }, 5000);
 
-  return () => clearInterval(interval);
-
-  // We only watch pId. If we watch flag_status, it resets the timer too fast.
-}, [pId, dispatch]);
+    return () => clearInterval(interval);
+  }, [pId, dispatch]);
 
 
   useEffect(() => {
