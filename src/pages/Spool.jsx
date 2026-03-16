@@ -21,6 +21,7 @@ const Spool = () => {
   const { state } = useLocation();
   const dispatch = useDispatch()
   const closedDispatchedRef = useRef(false);
+  const timerRef=useRef(null)
   const itemsPerPage = 10;
 
   const selected = useSelector((state) => state.entity.selected);
@@ -39,6 +40,8 @@ const Spool = () => {
   const [them, setThem] = useState('');
   const [search, setSearch] = useState("");
 
+  const flag_status = filteredSpools?.[0]?.flag_status;
+
   useEffect(() => {
     const themColor = JSON.parse(localStorage.getItem('selectedEntity'));
     setThem(themColor?.entity_secondary_color)
@@ -56,35 +59,31 @@ const Spool = () => {
     }
   }, [state]);
 
-  // useEffect(() => {
-  //   if (pId) {
-  //     dispatch(spoolByProject({ project_id: pId }))
-  //   }
-  // }, [pId])
 
-  useEffect(() => {
-  if (!pId) return;
 
-  const closedSpoolExists = filteredSpools?.some(spool => spool.flag_status === "closed");
-
-  if (closedSpoolExists) {
-    // Only dispatch once for closed spools
-    if (!closedDispatchedRef.current) {
-      closedDispatchedRef.current = true;
-      const timer = setTimeout(() => {
-        dispatch(spoolByProject({ project_id: pId }));
-      }, 500);
-
-      return () => clearTimeout(timer);
-    }
-  } else {
-    // Reset the ref so that closed spools can trigger dispatch next time they appear
-    closedDispatchedRef.current = false;
-
-    // Normal behavior: call API immediately
+useEffect(() => {
+  // 1. Initial Call
+  if (pId) {
     dispatch(spoolByProject({ project_id: pId }));
   }
-}, [pId, filteredSpools, dispatch]);
+
+  // 2. Real-time Polling Logic
+  const interval = setInterval(() => {
+    // Check raw data from Redux, not the filtered state
+    const rawSpools = projectsData?.spools || [];
+    const isAnySpoolClosed = rawSpools.some(s => s.flag_status === "closed");
+
+    if (pId && isAnySpoolClosed) {
+      console.log("Admin sync: Status is closed, refreshing...");
+      dispatch(spoolByProject({ project_id: pId }));
+    }
+  }, 5000);
+
+  return () => clearInterval(interval);
+
+  // We only watch pId. If we watch flag_status, it resets the timer too fast.
+}, [pId, dispatch]);
+
 
   useEffect(() => {
     if (projectsData) {
