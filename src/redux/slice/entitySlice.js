@@ -62,7 +62,6 @@ const getInitialSelectedEntity = () => {
 
 const initialState = {
   list: [],
-  // selected: getInitialSelectedEntity(),
   selected: null,
   project: [],
   notifications: [],
@@ -75,17 +74,6 @@ const initialState = {
 
 const entitySlice = createSlice({
   name: "entity",
-  // initialState: {
-  //   list: [],
-  //   selected: null,
-  //   project: [],
-  //   notifications: [],
-  //   theme: null,
-  //   primaryColor: null,
-  //   selectedLogo: null,
-  //   loading: false,
-  //   error: null
-  // },
   initialState,
   reducers: {
     setEntity: (state, action) => {

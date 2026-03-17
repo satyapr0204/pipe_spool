@@ -77,7 +77,6 @@ const DrawingSpool = () => {
     }, []);
 
     const onScan = async (eventCall) => {
-        console.log("eventCall", eventCall)
         try {
             const entity_id = JSON.parse(localStorage.getItem('selectedEntity'))?.id
             const project_id = spoolDetails?.project?.id
@@ -90,7 +89,7 @@ const DrawingSpool = () => {
             if (eventCall === 'START' || eventCall === 'END') {
                 if (eventCall === 'START') {
                     if (currentStatus === 'ready_to_start') {
-                        console.log("currentStatus", currentStatus)
+                        
                         await dispatch(startAndComplateTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -104,7 +103,7 @@ const DrawingSpool = () => {
                 }
                 else {
                     if (currentStatus === 'in_progress') {
-                        console.log("currentStatus", currentStatus)
+                        
                         await dispatch(startAndComplateTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -123,7 +122,7 @@ const DrawingSpool = () => {
             } else if (eventCall === 'PAUSE' || eventCall === 'RESUME') {
                 if (eventCall === 'PAUSE') {
                     if (currentStatus === 'in_progress' && currentStatus !== 'ready_to_start') {
-                        console.log("currentStatus", currentStatus)
+                        
                         const pauseData = await dispatch(pauseAndResumeTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -131,7 +130,7 @@ const DrawingSpool = () => {
                             stage_id: stage_id,
                             action_type: 'pause'
                         }));
-                        console.log("pauseData", pauseData?.payload?.data?.id)
+                        
                         if (pauseData?.payload?.success) {
                             localStorage.setItem('project_assign_id', pauseData?.payload?.data?.id)
                             setPauseId(pauseData?.payload?.data?.id)
@@ -141,7 +140,7 @@ const DrawingSpool = () => {
                     }
                 } else {
                     if (currentStatus === 'paused') {
-                        console.log("currentStatus", currentStatus)
+                       
                         await dispatch(pauseAndResumeTask({
                             entity_id: entity_id,
                             project_id: project_id,
@@ -180,7 +179,6 @@ const DrawingSpool = () => {
             setSpoolId(state?.spool_id);
             setStageId(state?.stage_id);
         } else {
-            console.log("state?.spool_id && state?.stage_id", state?.spool_id, "&&", state?.stage_id)
             navigate(-1)
         }
     }, [state]);
@@ -495,7 +493,7 @@ const DrawingSpool = () => {
 
         const handleKeyDown = async (e) => {
             if (!e.key) return;
-            console.log("e", e)
+           
             const currentTime = Date.now();
             const timeDiff = currentTime - lastKeyTime;
             lastKeyTime = currentTime;
@@ -517,7 +515,7 @@ const DrawingSpool = () => {
 
             scanTimeout = setTimeout(async () => {
                 const cleaned = buffer.trim();
-                console.log("cleaned", cleaned)
+                
                 buffer = "";
 
                 // ✅ Ignore empty or too short values
@@ -528,11 +526,8 @@ const DrawingSpool = () => {
                 if (scanLock) return;
                 scanLock = true;
 
-                console.log("Scanner Detected:", cleaned);
-
                 try {
                     const action = getActionFromBarcode(cleaned);
-                    console.log("action", action?.toUpperCase());
                     await onScan(action?.toUpperCase());
                 } catch (err) {
                     console.error("Scan error:", err);

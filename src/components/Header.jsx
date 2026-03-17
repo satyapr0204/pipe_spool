@@ -310,32 +310,7 @@ const Header = () => {
                                   data-id={item?.id}
                                   key={item?.id}
                                 >
-                                  {/* <Link
-                                    to="/drawing-spool"
-                                    data-id={item?.id}
-                                    state={{
-                                      stage_id: item?.stage_id,
-                                      spool_id: item?.spool_id,
-                                    }}
-                                    data-is-read={item?.is_read}
-                                    style={{
-                                      fontWeight: item?.isUnread
-                                        ? "bold"
-                                        : "normal",
-                                    }}
-                                  >
-                                    <h3>
-                                      {item?.get_spool?.spool_number}
-                                      {item?.is_read === 0 && <span></span>}
-                                      <b>{timeAgo(item.created_at)}</b>
-                                    </h3>
-
-                                    <p>{item?.get_project?.project_name}</p>
-
-                                    <p>
-                                      <b>Admin reply:</b> {item?.message}
-                                    </p>
-                                  </Link> */}
+                                  
                                   <Link
                                     to="/drawing-spool"
                                     state={{
