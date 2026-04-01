@@ -148,9 +148,9 @@ const Spool = () => {
     if (isflagged) {
       filtered = filtered.filter(item => {
         const flagStatus = item?.flag_status;
-        return flagStatus !== null && flagStatus !== undefined && flagStatus !== "";
+        return flagStatus == 'open'
+        // return flagStatus !== null && flagStatus !== undefined && flagStatus !== "" && flagStatus !== "closed";
       });
-
     }
     setFilteredSpools(filtered);
     // setCurrentPage(1)
@@ -159,7 +159,6 @@ const Spool = () => {
       prevFiltersRef.current.selectStage !== selectStage ||
       prevFiltersRef.current.selectStatus !== selectStatus ||
       prevFiltersRef.current.isflagged !== isflagged;
-
     if (filtersChanged) {
       setCurrentPage(1);
       localStorage.setItem("currentPage", 1);
