@@ -105,9 +105,10 @@ const Spool = () => {
       if (pId && isAnySpoolOpen) {
         console.log("Polling: Status is OPEN, fetching updates...");
         dispatch(spoolByProject({ project_id: pId }));
-        let currentPage = localStorage.getItem("currentPage");
-        if (currentPage) {
-          setCurrentPage(Number(currentPage))
+        let currentPageIntervel = localStorage.getItem("currentPage");
+        console.log("currentPageIntervel out of if",currentPageIntervel)
+        if (currentPageIntervel) {
+          setCurrentPage(Number(currentPageIntervel))
         }
       } else {
         console.log("Polling Paused: All spools are CLOSED.");
