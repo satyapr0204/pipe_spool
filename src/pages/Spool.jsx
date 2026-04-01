@@ -358,7 +358,7 @@ const Spool = () => {
                             )}
                           </td>
                           <td>
-                            {(item?.flag_status !== null && item?.flag_status !== "closed") && item?.status !== "all_completed" ? (
+                            {(item?.flag_status !== null && item?.flag_status !== "closed" && item?.flag_status !== '' && item?.flag_status !== undefined) && item?.status !== "all_completed" ? (
                               <div className="status-tag flagged">
                                 <i className="hgi hgi-stroke hgi-flag-02"></i>
                                 Flagged
