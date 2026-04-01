@@ -27,6 +27,7 @@ const Pagination = ({ currentPage, totalItems, itemsPerPage, onPageChange, showR
     const handleClick = (e, page) => {
         e.preventDefault();
         if (page >= 1 && page <= totalPages && page !== currentPage) {
+            localStorage.setItem("currentPage", page);
             onPageChange(page);
         }
     };
