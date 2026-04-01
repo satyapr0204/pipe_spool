@@ -39,7 +39,7 @@ const Spool = () => {
   const [selectSpool, setSelectSpool] = useState(null)
   const [them, setThem] = useState('');
   const [search, setSearch] = useState("");
-
+  const prevFiltersRef = useRef({ search, selectStage, selectStatus, isflagged });
   const flag_status = filteredSpools?.[0]?.flag_status;
 
   useEffect(() => {
@@ -105,11 +105,6 @@ const Spool = () => {
       if (pId && isAnySpoolOpen) {
         console.log("Polling: Status is OPEN, fetching updates...");
         dispatch(spoolByProject({ project_id: pId }));
-        let currentPageIntervel = localStorage.getItem("currentPage");
-        console.log("currentPageIntervel out of if",currentPageIntervel)
-        if (currentPageIntervel) {
-          setCurrentPage(Number(currentPageIntervel))
-        }
       } else {
         console.log("Polling Paused: All spools are CLOSED.");
       }
@@ -158,7 +153,23 @@ const Spool = () => {
 
     }
     setFilteredSpools(filtered);
-    setCurrentPage(1)
+    // setCurrentPage(1)
+    const filtersChanged =
+      prevFiltersRef.current.search !== search ||
+      prevFiltersRef.current.selectStage !== selectStage ||
+      prevFiltersRef.current.selectStatus !== selectStatus ||
+      prevFiltersRef.current.isflagged !== isflagged;
+
+    if (filtersChanged) {
+      setCurrentPage(1);
+      localStorage.setItem("currentPage", 1);
+      prevFiltersRef.current = { search, selectStage, selectStatus, isflagged };
+    } else {
+      const savedPage = localStorage.getItem("currentPage");
+      if (savedPage) {
+        setCurrentPage(Number(savedPage));
+      }
+    }
   }, [spools, selectStage, selectStatus, isflagged, search]);
 
   const formatStatus = (value) =>
